@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.MaterialTheme
 import com.terrsus.terrorwear.theme.TerrorWearTheme
-import com.terrsus.terrorwear.ui.navigation.TerrorWearNavGraph
+import com.terrsus.terrorwear.ui.navigation.NavGraph
 
 @Composable
 fun TerrorWearApp(
@@ -14,7 +14,7 @@ fun TerrorWearApp(
     TerrorWearTheme {
         MaterialTheme {
             val navController = rememberNavController()
-            TerrorWearNavGraph(navController)
+            NavGraph(navController)
         }
     }
 }

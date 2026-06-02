@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.MaterialTheme
@@ -28,10 +29,9 @@ import com.terrsus.terrorwear.viewmodel.DashboardViewModel
 
 @Composable
 fun DashboardScreen(
-    viewModel: DashboardViewModel = viewModel(),
-    onNavigateStratagem: () -> Unit = {},
-    onNavigateArduino: () -> Unit = {},
-    onNavigateProgramAssist: () -> Unit = {}
+    buttons: List<DashboardButton>,
+    onNavigate: (route: String) -> Unit,
+    viewModel: DashboardViewModel = viewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -41,16 +41,7 @@ fun DashboardScreen(
         ScalingLazyColumn(
             modifier = Modifier
                 .fillMaxSize(),
-//                    contentPadding = PaddingValues(0.dp)
         ) {
-            item {
-                androidx.compose.foundation.layout.Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                }
-            }
-
             item {
                 Text(
                     text = stringResource(R.string.dashboard_title),
@@ -60,27 +51,11 @@ fun DashboardScreen(
                 )
             }
 
-            item {
+            items(buttons.size) { index ->
+                val button = buttons[index]
                 Chip(
-                    label = { Text("Stratagem") },
-                    onClick = onNavigateStratagem,
-                    colors = ChipDefaults.primaryChipColors()
-                )
-            }
-
-            item {
-                Chip(
-                    label = { Text("Arduino") },
-                    onClick = onNavigateArduino,
-                    colors = ChipDefaults.primaryChipColors()
-                )
-            }
-
-            item {
-                Chip(
-                    label = { Text("Program Assist") },
-                    onClick = onNavigateProgramAssist,
-                    colors = ChipDefaults.primaryChipColors()
+                    label = { Text(button.label) },
+                    onClick = { onNavigate(button.route) }
                 )
             }
         }
