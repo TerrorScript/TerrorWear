@@ -1,44 +1,36 @@
 package com.terrsus.terrorwear.viewmodel
 
-import android.bluetooth.le.ScanResult
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.terrsus.terrorwear.AppContainer
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.terrsus.terrorwear.features.ble.BleDevice
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class ArduinoViewModel : ViewModel() {
 
-    private val startScan = AppContainer.startBleScan
-    private val stopScan = AppContainer.stopBleScan
+    private val ble = AppContainer.bleManager
 
-    private val _selectedDevice = MutableStateFlow<ScanResult?>(null)
-    val selectedDevice: StateFlow<ScanResult?> = _selectedDevice
+    val isScanning: StateFlow<Boolean> = ble.state
+        .map { it is com.terrsus.terrorwear.features.ble.BleState.Scanning }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    val isScanning = AppContainer.bleRepository.isScanning
-    val scanResults = AppContainer.bleRepository.scanResults
+    val scanResults = ble.devices
+
+    private val _selectedDevice = MutableStateFlow<BleDevice?>(null)
+    val selectedDevice: StateFlow<BleDevice?> = _selectedDevice
+
+    fun selectDevice(device: BleDevice) {
+        _selectedDevice.value = device
+    }
+
+    fun beginScan() = ble.start()
+    fun endScan() = ble.stop()
 
     private val _statusMessage = MutableStateFlow("")
     val statusMessage: StateFlow<String> = _statusMessage
 
-    fun beginScan() = viewModelScope.launch {
-        Log.d("ArduinoVM", "Starting BLE scan")
-        startScan()
-    }
-
-    fun endScan() = viewModelScope.launch {
-        Log.d("ArduinoVM", "Stopping BLE scan")
-        stopScan()
-    }
-
-    fun selectDevice(device: ScanResult) {
-        Log.d("ArduinoVM", "Selected device: ${device.device?.name} (${device.device?.address})")
-        _selectedDevice.value = device
-    }
-
-    fun showStatus(message: String) {
-        _statusMessage.value = message
+    fun showStatus(msg: String) {
+        _statusMessage.value = msg
     }
 }

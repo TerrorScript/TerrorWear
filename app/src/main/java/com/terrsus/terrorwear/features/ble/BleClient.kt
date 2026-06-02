@@ -1,8 +1,10 @@
-package com.terrsus.terrorwear.core.ble
+package com.terrsus.terrorwear.features.ble
 
 import android.content.Context
 
-class BleClient(context: Context) {
+class BleClient(
+    context: Context
+) {
 
     private val scanner = BleScanner(context)
 

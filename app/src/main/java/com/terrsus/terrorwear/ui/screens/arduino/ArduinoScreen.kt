@@ -20,69 +20,46 @@ import com.terrsus.terrorwear.viewmodel.ArduinoViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun ArduinoScreen(
-    viewModel: ArduinoViewModel
-) {
-    val context = LocalContext.current
+fun ArduinoScreen(viewModel: ArduinoViewModel) {
     val haptics = LocalHapticFeedback.current
-    val statusMessage by viewModel.statusMessage.collectAsState()
-
     val view = LocalView.current
 
-    SideEffect {
-        view.keepScreenOn = true
-    }
+    SideEffect { view.keepScreenOn = true }
 
     val scanning by viewModel.isScanning.collectAsState()
     val results by viewModel.scanResults.collectAsState()
-    Box(
-        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-    ) {
-        LazyColumn(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            item {
-                Text(
-                    text = if (scanning) "Scanning…" else "Idle",
-                    style = MaterialTheme.typography.title3
-                )
-            }
+    val statusMessage by viewModel.statusMessage.collectAsState()
+    val selectedDevice by viewModel.selectedDevice.collectAsState()
 
-            item {
-                Chip(label = { Text(if (scanning) "Stop Scan" else "Start Scan") }, onClick = {
+    var lastMessage by remember { mutableStateOf("") }
+    if (statusMessage.isNotEmpty()) lastMessage = statusMessage
+
+    Box(Modifier.fillMaxSize()) {
+        ArduinoContent(
+            scanning = scanning,
+            results = results,
+            selectedDevice = selectedDevice,
+            onToggleScan = {
+                if (scanning) {
+                    viewModel.endScan()
+                    viewModel.showStatus("Scan stopped")
+                } else {
+                    viewModel.beginScan()
+                    viewModel.showStatus("Scan started")
+                }
+                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+            },
+            onSelectDevice = { device ->
+                if (device == viewModel.selectedDevice) {
+                    haptics.performHapticFeedback(HapticFeedbackType.Reject)
+                    viewModel.showStatus("Device already selected.")
+                } else {
+                    viewModel.selectDevice(device)
                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                    if (scanning) {
-                        viewModel.endScan()
-                        viewModel.showStatus("Scan stopped")
-                    } else {
-                        viewModel.beginScan()
-                        viewModel.showStatus("Scan started")
-                    }
-                })
+                    viewModel.showStatus("Selected\n${device.name ?: "Unknown"}")
+                }
             }
-
-            items(results.size) { i ->
-                val device: ScanResult = results[i]
-                Chip(
-                    label = { Text(device.device?.name ?: "Unknown") },
-                    secondaryLabel = { Text(device.device.address ?: "No address") },
-                    onClick = {
-                        if (device == viewModel.selectedDevice) {
-                            haptics.performHapticFeedback(HapticFeedbackType.Reject)
-                            viewModel.showStatus("Device already selected.")
-                            return@Chip
-                        }
-                        viewModel.selectDevice(device)
-                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                        viewModel.showStatus("Selected\n${device.device?.name ?: "Unknown"}")
-                    })
-            }
-        }
-
-        var lastMessage by remember { mutableStateOf("") }
-
-        // Update lastMessage only when a new non-empty message arrives
-        if (statusMessage.isNotEmpty()) lastMessage = statusMessage
+        )
 
         AnimatedVisibility(
             visible = statusMessage.isNotEmpty(),
@@ -97,6 +74,6 @@ fun ArduinoScreen(
                 delay(1500)
                 viewModel.showStatus("")
             }
-    }
+        }
     }
 }
