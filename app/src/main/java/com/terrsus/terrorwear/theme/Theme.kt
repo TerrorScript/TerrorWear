@@ -1,4 +1,4 @@
-package com.terrsus.terrorwear.presentation.theme
+package com.terrsus.terrorwear.theme
 
 import androidx.compose.runtime.Composable
 import androidx.wear.compose.material.MaterialTheme
