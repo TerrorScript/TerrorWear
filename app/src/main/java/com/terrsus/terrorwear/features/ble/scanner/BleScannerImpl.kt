@@ -1,4 +1,4 @@
-package com.terrsus.terrorwear.features.ble
+package com.terrsus.terrorwear.features.ble.scanner
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothManager
@@ -6,10 +6,11 @@ import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.Context
 import android.util.Log
+import com.terrsus.terrorwear.features.ble.model.BleDevice
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
-class BleScanner(context: Context) {
+class BleScannerImpl(context: Context): BleScanner {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
@@ -21,13 +22,22 @@ class BleScanner(context: Context) {
     private val _pendingUpdates = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     private val _isScanning = MutableStateFlow(false)
-    val isScanning: StateFlow<Boolean> = _isScanning
+    override val isScanning: StateFlow<Boolean> = _isScanning
 
     @OptIn(FlowPreview::class)
-    val scanResults: StateFlow<List<ScanResult>> =
+    @SuppressLint("MissingPermission")
+    override val scanResults: StateFlow<List<BleDevice>> =
         _pendingUpdates
             .sample(300)
-            .map { devices.values.toList() }
+            .map {
+                devices.values.map { result ->
+                    BleDevice(
+                        address = result.device.address,
+                        name = result.device.name,
+                        rssi = result.rssi
+                    )
+                }
+            }
             .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
     private val callback = object : ScanCallback() {
@@ -39,7 +49,7 @@ class BleScanner(context: Context) {
     }
 
     @SuppressLint("MissingPermission")
-    fun startScan() {
+    override fun startScan() {
         if (adapter?.isEnabled != true) return
         if (_isScanning.value) return
 
@@ -49,9 +59,13 @@ class BleScanner(context: Context) {
     }
 
     @SuppressLint("MissingPermission")
-    fun stopScan() {
+    override fun stopScan() {
         if (!_isScanning.value) return
         _isScanning.value = false
         scanner?.stopScan(callback)
+    }
+
+    init {
+        Log.d("BleScanner", "BleScannerImpl created")
     }
 }

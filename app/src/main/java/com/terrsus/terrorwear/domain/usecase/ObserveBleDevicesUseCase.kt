@@ -1,11 +1,12 @@
 package com.terrsus.terrorwear.domain.usecase
 
-import com.terrsus.terrorwear.features.ble.BleManager
+import com.terrsus.terrorwear.data.repository.BleRepository
+import com.terrsus.terrorwear.features.ble.connection.BleManager
+import com.terrsus.terrorwear.features.ble.model.BleDevice
 import kotlinx.coroutines.flow.StateFlow
 
 class ObserveBleDevicesUseCase(
-    private val bleManager: BleManager
+    private val repo: BleRepository
 ) {
-    operator fun invoke(): StateFlow<List<com.terrsus.terrorwear.features.ble.BleDevice>> =
-        bleManager.devices
+    operator fun invoke(): StateFlow<List<BleDevice>> = repo.devices
 }

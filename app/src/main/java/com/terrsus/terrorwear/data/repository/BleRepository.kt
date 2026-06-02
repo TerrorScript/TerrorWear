@@ -1,11 +1,12 @@
 package com.terrsus.terrorwear.data.repository
 
-import com.terrsus.terrorwear.features.ble.BleDevice
+import com.terrsus.terrorwear.features.ble.model.BleDevice
+import com.terrsus.terrorwear.features.ble.model.BleState
 import kotlinx.coroutines.flow.StateFlow
 
 interface BleRepository {
-    val isScanning: StateFlow<Boolean>
-    val scanResults: StateFlow<List<BleDevice>>
+    val state: StateFlow<BleState>
+    val devices: StateFlow<List<BleDevice>>
 
     fun startScan()
     fun stopScan()

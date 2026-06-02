@@ -1,37 +1,20 @@
 package com.terrsus.terrorwear.data.repository
 
-import android.annotation.SuppressLint
-import com.terrsus.terrorwear.features.ble.BleClient
-import com.terrsus.terrorwear.features.ble.BleDevice
+import com.terrsus.terrorwear.features.ble.connection.BleManager
+import com.terrsus.terrorwear.features.ble.model.BleDevice
+import com.terrsus.terrorwear.features.ble.model.BleState
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.SharingStarted
 
 class BleRepositoryImpl(
-    private val client: BleClient
+    private val bleManager: BleManager
 ) : BleRepository {
 
-    private val scope = CoroutineScope(Dispatchers.Default)
+    override val state: StateFlow<BleState>
+        get() = bleManager.state
 
-    override val isScanning: StateFlow<Boolean> = client.isScanning
+    override val devices: StateFlow<List<BleDevice>>
+        get() = bleManager.devices
 
-    @SuppressLint("MissingPermission")
-    override val scanResults: StateFlow<List<BleDevice>> =
-        client.scanResults
-            .map { list ->
-                list.map { scan ->
-                    BleDevice(
-                        address = scan.device.address,
-                        name = scan.device.name,
-                        rssi = scan.rssi
-                    )
-                }
-            }
-            .stateIn(scope, SharingStarted.Eagerly, emptyList())
-
-    override fun startScan() = client.startScan()
-    override fun stopScan() = client.stopScan()
+    override fun startScan() = bleManager.start()
+    override fun stopScan() = bleManager.stop()
 }

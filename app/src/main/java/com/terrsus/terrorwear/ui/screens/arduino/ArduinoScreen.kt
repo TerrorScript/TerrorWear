@@ -1,6 +1,7 @@
 package com.terrsus.terrorwear.ui.screens.arduino
 
 import android.bluetooth.le.ScanResult
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -40,10 +41,13 @@ fun ArduinoScreen(viewModel: ArduinoViewModel) {
             results = results,
             selectedDevice = selectedDevice,
             onToggleScan = {
+                Log.i("BLE", "Toggle Scan")
                 if (scanning) {
+                    Log.d("BLE", "Stop Scan")
                     viewModel.endScan()
                     viewModel.showStatus("Scan stopped")
                 } else {
+                    Log.d("BLE", "Start Scan")
                     viewModel.beginScan()
                     viewModel.showStatus("Scan started")
                 }

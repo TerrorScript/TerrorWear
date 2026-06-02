@@ -1,4 +1,4 @@
-package com.terrsus.terrorwear.features.ble
+package com.terrsus.terrorwear.features.ble.model
 
 sealed class BleState {
     object Idle : BleState()

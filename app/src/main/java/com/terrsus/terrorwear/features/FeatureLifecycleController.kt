@@ -1,6 +1,6 @@
 package com.terrsus.terrorwear.features
 
-import com.terrsus.terrorwear.features.ble.BleManager
+import com.terrsus.terrorwear.features.ble.connection.BleManager
 import com.terrsus.terrorwear.features.sensors.SensorManager
 import com.terrsus.terrorwear.features.wifi.WifiManager
 

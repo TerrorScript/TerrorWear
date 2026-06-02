@@ -3,7 +3,7 @@ package com.terrsus.terrorwear.ui.screens.arduino
 import androidx.compose.runtime.Composable
 import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.Text
-import com.terrsus.terrorwear.features.ble.BleDevice
+import com.terrsus.terrorwear.features.ble.model.BleDevice
 
 @Composable
 fun ArduinoDeviceRow(

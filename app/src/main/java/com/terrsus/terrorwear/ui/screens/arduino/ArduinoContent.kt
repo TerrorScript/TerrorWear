@@ -13,7 +13,7 @@ import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
-import com.terrsus.terrorwear.features.ble.BleDevice
+import com.terrsus.terrorwear.features.ble.model.BleDevice
 
 @Composable
 fun ArduinoContent(
