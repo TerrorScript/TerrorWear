@@ -10,6 +10,7 @@ import com.terrsus.terrorwear.ui.screens.arduino.ArduinoScreen
 import com.terrsus.terrorwear.ui.screens.dashboard.DashboardButton
 import com.terrsus.terrorwear.ui.screens.programassist.ProgramAssistScreen
 import com.terrsus.terrorwear.ui.screens.stratagem.StratagemScreen
+import com.terrsus.terrorwear.ui.util.BlePermissionBox
 import com.terrsus.terrorwear.viewmodel.ArduinoViewModel
 
 object Routes {
@@ -46,7 +47,9 @@ fun NavGraph(navController: NavHostController) {
 
         composable(Routes.ARDUINO) {
             val viewModel: ArduinoViewModel = viewModel()
-            ArduinoScreen(viewModel = viewModel)
+            BlePermissionBox {
+                ArduinoScreen(viewModel)
+            }
         }
 
         composable(Routes.PROGRAM_ASSIST) {
