@@ -20,6 +20,9 @@ class ArduinoViewModel : ViewModel() {
     val isScanning = AppContainer.bleRepository.isScanning
     val scanResults = AppContainer.bleRepository.scanResults
 
+    private val _statusMessage = MutableStateFlow("")
+    val statusMessage: StateFlow<String> = _statusMessage
+
     fun beginScan() = viewModelScope.launch {
         Log.d("ArduinoVM", "Starting BLE scan")
         startScan()
@@ -33,5 +36,9 @@ class ArduinoViewModel : ViewModel() {
     fun selectDevice(device: ScanResult) {
         Log.d("ArduinoVM", "Selected device: ${device.device?.name} (${device.device?.address})")
         _selectedDevice.value = device
+    }
+
+    fun showStatus(message: String) {
+        _statusMessage.value = message
     }
 }
