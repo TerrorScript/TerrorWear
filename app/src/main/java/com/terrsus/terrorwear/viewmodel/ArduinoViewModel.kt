@@ -6,6 +6,7 @@ import com.terrsus.terrorwear.AppContainer
 import com.terrsus.terrorwear.domain.usecase.*
 import com.terrsus.terrorwear.features.ble.model.BleDevice
 import com.terrsus.terrorwear.features.ble.model.BleState
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 
 class ArduinoViewModel : ViewModel() {
@@ -15,7 +16,12 @@ class ArduinoViewModel : ViewModel() {
     private val startScan = AppContainer.startBleScanUseCase
     private val stopScan = AppContainer.stopBleScanUseCase
 
+    @OptIn(FlowPreview::class)
     val scanResults = observeDevices()
+        .map { list -> list.distinctBy { it.address } }
+        .sample(250) // emit at most every 250ms
+        .distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val isScanning: StateFlow<Boolean> =
         observeState()
@@ -34,6 +40,16 @@ class ArduinoViewModel : ViewModel() {
 
     private val _statusMessage = MutableStateFlow("")
     val statusMessage: StateFlow<String> = _statusMessage
+
+    private val _navigateToGatt = MutableStateFlow<BleDevice?>(null)
+    val navigateToGatt: StateFlow<BleDevice?> = _navigateToGatt
+
+    fun navigateToGatt(device: BleDevice) {
+        _navigateToGatt.value = device
+    }
+    fun clearGattNavigation() {
+        _navigateToGatt.value = null
+    }
 
     fun showStatus(msg: String) {
         _statusMessage.value = msg

@@ -6,8 +6,12 @@ import com.terrsus.terrorwear.data.repository.BleRepositoryImpl
 import com.terrsus.terrorwear.domain.usecase.*
 import com.terrsus.terrorwear.features.ble.connection.BleManager
 import com.terrsus.terrorwear.features.ble.connection.BleProvider
+import com.terrsus.terrorwear.features.ble.gatt.BleGattClientImpl
+import com.terrsus.terrorwear.features.ble.gatt.BleGattClient
+import com.terrsus.terrorwear.features.ble.gatt.FakeBleGattClient
 import com.terrsus.terrorwear.features.sensors.SensorManager
 import com.terrsus.terrorwear.features.wifi.WifiManager
+import com.terrsus.terrorwear.util.DeviceUtils
 
 object AppContainer {
 
@@ -16,6 +20,12 @@ object AppContainer {
     fun init(context: Context) {
         appContext = context.applicationContext
     }
+
+    val bleGattClient: BleGattClient by lazy {
+        if (DeviceUtils.isEmulator()) FakeBleGattClient(appContext)
+        else BleGattClientImpl(appContext)
+    }
+
 
     // --- BLE Core ---
     val bleManager: BleManager by lazy {

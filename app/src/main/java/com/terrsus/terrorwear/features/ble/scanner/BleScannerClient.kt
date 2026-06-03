@@ -1,13 +1,10 @@
-package com.terrsus.terrorwear.features.ble.connection
+package com.terrsus.terrorwear.features.ble.scanner
 
 import android.content.Context
 import android.util.Log
-import com.terrsus.terrorwear.features.ble.scanner.BleScanner
-import com.terrsus.terrorwear.features.ble.scanner.BleScannerImpl
-import com.terrsus.terrorwear.features.ble.scanner.FakeBleScanner
 import com.terrsus.terrorwear.util.DeviceUtils
 
-class BleClient(
+class BleScannerClient(
     context: Context
 ) {
 

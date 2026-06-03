@@ -3,13 +3,13 @@ package com.terrsus.terrorwear.features.ble.connection
 import android.annotation.SuppressLint
 import com.terrsus.terrorwear.features.ble.model.BleDevice
 import com.terrsus.terrorwear.features.ble.model.BleState
-import com.terrsus.terrorwear.features.ble.scanner.BleScannerImpl
+import com.terrsus.terrorwear.features.ble.scanner.BleScannerClient
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
 @SuppressLint("MissingPermission")
 class BleManager(
-    private val client: BleClient
+    private val client: BleScannerClient
 ) {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
