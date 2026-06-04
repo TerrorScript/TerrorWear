@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import com.terrsus.terrorwear.features.ble.gatt.model.BleGattService
 import com.terrsus.terrorwear.features.ble.gatt.model.BleGattCharacteristic
+import com.terrsus.terrorwear.features.ble.gatt.model.BleGattCharacteristicValue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
@@ -27,7 +28,7 @@ class BleGattClientImpl(
         mutableMapOf<String, MutableStateFlow<List<BleGattService>>>()
 
     private val notificationsFlows =
-        mutableMapOf<String, MutableStateFlow<ByteArray>>()
+        mutableMapOf<String, MutableStateFlow<BleGattCharacteristicValue>>()
 
     override fun connect(address: String) {
         val device = bluetoothAdapter.getRemoteDevice(address)
@@ -85,8 +86,18 @@ class BleGattClientImpl(
                 characteristic: BluetoothGattCharacteristic
             ) {
                 notificationsFlows.getOrPut(address) {
-                    MutableStateFlow(ByteArray(0))
-                }.value = characteristic.value
+                    MutableStateFlow(
+                        BleGattCharacteristicValue(
+                            serviceUuid = characteristic.service.uuid,
+                            characteristicUuid = characteristic.uuid,
+                            value = ByteArray(0)
+                        )
+                    )
+                }.value = BleGattCharacteristicValue(
+                    serviceUuid = characteristic.service.uuid,
+                    characteristicUuid = characteristic.uuid,
+                    value = characteristic.value
+                )
             }
 
             override fun onCharacteristicRead(
@@ -94,11 +105,19 @@ class BleGattClientImpl(
                 characteristic: BluetoothGattCharacteristic,
                 status: Int
             ) {
-                if (status == BluetoothGatt.GATT_SUCCESS) {
-                    notificationsFlows.getOrPut(address) {
-                        MutableStateFlow(ByteArray(0))
-                    }.value = characteristic.value
-                }
+                notificationsFlows.getOrPut(address) {
+                    MutableStateFlow(
+                        BleGattCharacteristicValue(
+                            serviceUuid = characteristic.service.uuid,
+                            characteristicUuid = characteristic.uuid,
+                            value = ByteArray(0)
+                        )
+                    )
+                }.value = BleGattCharacteristicValue(
+                    serviceUuid = characteristic.service.uuid,
+                    characteristicUuid = characteristic.uuid,
+                    value = characteristic.value
+                )
             }
         })
     }
@@ -119,12 +138,18 @@ class BleGattClientImpl(
             MutableStateFlow(emptyList())
         }
 
-    override fun notifications(address: String): Flow<ByteArray> =
+    override fun notifications(address: String): Flow<BleGattCharacteristicValue> =
         notificationsFlows.getOrPut(address) {
-            MutableStateFlow(ByteArray(0))
+            MutableStateFlow(
+                BleGattCharacteristicValue(
+                    serviceUuid = UUID(0, 0),
+                    characteristicUuid = UUID(0, 0),
+                    value = ByteArray(0)
+                )
+            )
         }
 
-    override fun read(address: String, service: UUID, characteristic: UUID): Flow<ByteArray> {
+    override fun read(address: String, service: UUID, characteristic: UUID): Flow<BleGattCharacteristicValue> {
         val gatt = gattMap[address] ?: return notifications(address)
 
         val ch = gatt.getService(service)?.getCharacteristic(characteristic)

@@ -33,7 +33,6 @@ fun DashboardScreen(
     onNavigate: (route: String) -> Unit,
     viewModel: DashboardViewModel = viewModel()
 ) {
-    val state by viewModel.uiState.collectAsState()
 
     Box(Modifier.fillMaxSize()) {
         TimeText(Modifier.align(Alignment.TopCenter))

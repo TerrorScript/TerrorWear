@@ -42,8 +42,8 @@ object AppContainer {
         ObserveBleDevicesUseCase(bleRepository)
     }
 
-    val observeBleStateUseCase by lazy {
-        ObserveBleStateUseCase(bleRepository)
+    val observeBleScanningUseCase by lazy {
+        ObserveBleScanningUseCase(bleRepository)
     }
 
     val startBleScanUseCase by lazy {

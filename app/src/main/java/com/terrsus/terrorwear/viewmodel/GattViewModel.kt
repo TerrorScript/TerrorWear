@@ -5,30 +5,46 @@ import androidx.lifecycle.viewModelScope
 import com.terrsus.terrorwear.AppContainer
 import com.terrsus.terrorwear.features.ble.gatt.BleGattConnectionState
 import com.terrsus.terrorwear.features.ble.gatt.model.BleGattService
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
+import com.terrsus.terrorwear.features.ble.gatt.model.BleGattCharacteristicValue
+import com.terrsus.terrorwear.features.ble.gatt.model.updateValue
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 class GattViewModel(
     val address: String
 ) : ViewModel() {
 
-    private val client = AppContainer.bleGattClient   // ⭐ FIXED
+    private val client = AppContainer.bleGattClient
 
+    // Internal mutable state for services
+    private val _services = MutableStateFlow<List<BleGattService>>(emptyList())
+    val services = _services.asStateFlow()
+
+    // Connection state is already a Flow from the client
     val connectionState = client.connectionState(address)
         .stateIn(viewModelScope, SharingStarted.Eagerly, BleGattConnectionState.Disconnected)
 
-    val services = client.services(address)
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList<BleGattService>())
-
-    val notifications = client.notifications(address)
-        .stateIn(viewModelScope, SharingStarted.Eagerly, ByteArray(0))
-
     init {
+        // Start connection immediately
         client.connect(address)
+
+        // Collect service discovery updates
+        viewModelScope.launch {
+            client.services(address).collect { list ->
+                _services.value = list
+            }
+        }
+
+        // Collect notifications and merge them into the service list
+        viewModelScope.launch {
+            client.notifications(address).collect { update: BleGattCharacteristicValue ->
+                _services.update { old -> old.updateValue(update) }
+            }
+        }
     }
 
-    fun read(service: UUID, characteristic: UUID) =
+    fun read(service: UUID, characteristic: UUID): Flow<BleGattCharacteristicValue> =
         client.read(address, service, characteristic)
 
     fun write(service: UUID, characteristic: UUID, data: ByteArray) =

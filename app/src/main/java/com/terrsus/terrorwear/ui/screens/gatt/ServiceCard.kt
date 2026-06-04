@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -23,11 +25,11 @@ fun ServiceCard(
 ) {
     Card(
         onClick = {},
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
     ) {
-        Column(
-            modifier = Modifier.padding(8.dp)
-        ) {
+        Column(Modifier.padding(8.dp)) {
             Text("Service: ${service.uuid}", fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(4.dp))
 

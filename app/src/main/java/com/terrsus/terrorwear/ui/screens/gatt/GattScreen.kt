@@ -13,54 +13,32 @@ import com.terrsus.terrorwear.features.ble.gatt.BleGattConnectionState
 import com.terrsus.terrorwear.features.ble.gatt.model.BleGattService
 import com.terrsus.terrorwear.viewmodel.GattViewModel
 
-
 @Composable
 fun GattScreen(viewModel: GattViewModel) {
-    val connection: BleGattConnectionState by viewModel.connectionState.collectAsState()
-    val services: List<BleGattService> by viewModel.services.collectAsState()
-    val notifications: ByteArray by viewModel.notifications.collectAsState()
+    val connection by viewModel.connectionState.collectAsState()
+    val services by viewModel.services.collectAsState()
 
-
-    Scaffold(
-        timeText = { TimeText() }
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        item {
+            Spacer(Modifier.height(8.dp))
+            ConnectionStatus(connection)
+            Spacer(Modifier.height(8.dp))
+        }
 
-            item {
-                ConnectionStatus(connection)
-                Spacer(Modifier.height(8.dp))
-            }
+        items(services) { service ->
+            ServiceCard(
+                service = service,
+                onRead = { ch -> viewModel.read(service.uuid, ch.uuid) },
+                onWrite = { ch -> viewModel.write(service.uuid, ch.uuid, "HELLO".encodeToByteArray()) },
+                onNotify = { ch -> viewModel.enableNotifications(service.uuid, ch.uuid) }
+            )
 
-            item {
-                Text(
-                    text = "Services",
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(Modifier.height(4.dp))
-            }
-
-            items(services) { service ->
-                ServiceCard(
-                    service = service,
-                    onRead = { ch -> viewModel.read(service.uuid, ch.uuid) },
-                    onWrite = { ch -> viewModel.write(service.uuid, ch.uuid, "HELLO".encodeToByteArray()) },
-                    onNotify = { ch -> viewModel.enableNotifications(service.uuid, ch.uuid) }
-                )
-                Spacer(Modifier.height(6.dp))
-            }
-
-            item {
-                if (notifications.isNotEmpty()) {
-                    Spacer(Modifier.height(12.dp))
-                    Text("Notifications", fontWeight = FontWeight.Bold)
-                    Text(notifications.decodeToString())
-                }
-            }
+            Spacer(Modifier.height(8.dp))
         }
     }
 }

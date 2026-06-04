@@ -4,5 +4,6 @@ import java.util.UUID
 
 data class BleGattCharacteristic(
     val uuid: UUID,
-    val properties: Int
+    val properties: Int,
+    val value: ByteArray? = null
 )

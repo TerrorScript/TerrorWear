@@ -57,6 +57,6 @@ class FakeBleScanner : BleScanner {
     }
 
     init {
-        Log.d("BLE", "FakeBleScanner created")
+        Log.d("BLE", "FakeBleScanner created instance = ${this.hashCode()}")
     }
 }

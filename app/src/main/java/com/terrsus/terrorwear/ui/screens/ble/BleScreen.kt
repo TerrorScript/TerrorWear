@@ -1,4 +1,4 @@
-package com.terrsus.terrorwear.ui.screens.arduino
+package com.terrsus.terrorwear.ui.screens.ble
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
@@ -20,12 +20,12 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
 import androidx.navigation.NavHostController
 import com.terrsus.terrorwear.ui.components.BottomStatusPopup
-import com.terrsus.terrorwear.viewmodel.ArduinoViewModel
+import com.terrsus.terrorwear.viewmodel.BleViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun ArduinoScreen(
-    viewModel: ArduinoViewModel,
+fun BleScreen(
+    viewModel: BleViewModel,
     navController: NavHostController
 ) {
     val haptics = LocalHapticFeedback.current
@@ -34,7 +34,9 @@ fun ArduinoScreen(
     SideEffect { view.keepScreenOn = true }
 
     val scanning by viewModel.isScanning.collectAsState()
-    val results by viewModel.scanResults.collectAsState()
+    val results by viewModel.filteredResults.collectAsState()
+    val deviceCount by viewModel.deviceCount.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsState()
     val statusMessage by viewModel.statusMessage.collectAsState()
     val selectedDevice by viewModel.selectedDevice.collectAsState()
     val navTarget by viewModel.navigateToGatt.collectAsState()
@@ -48,11 +50,15 @@ fun ArduinoScreen(
     var lastMessage by remember { mutableStateOf("") }
     if (statusMessage.isNotEmpty()) lastMessage = statusMessage
 
+//    TimeText()
+
     Box(Modifier.fillMaxSize()) {
-        ArduinoContent(
+        BleContent(
             scanning = scanning,
             results = results,
-            selectedDevice = selectedDevice,
+            deviceCount = deviceCount,
+            searchQuery = searchQuery,
+            onSearchChange = { viewModel.updateSearchQuery(it) },
             onToggleScan = {
                 Log.i("BLE", "Toggle Scan")
                 if (scanning) {
@@ -74,7 +80,6 @@ fun ArduinoScreen(
                     viewModel.selectDevice(device)
                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                     viewModel.showStatus("Selected\n${device.name ?: "Unknown"}")
-
                     viewModel.navigateToGatt(device)
                 }
             }

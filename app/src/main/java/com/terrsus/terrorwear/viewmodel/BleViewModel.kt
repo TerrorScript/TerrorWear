@@ -3,16 +3,21 @@ package com.terrsus.terrorwear.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.terrsus.terrorwear.AppContainer
-import com.terrsus.terrorwear.domain.usecase.*
 import com.terrsus.terrorwear.features.ble.model.BleDevice
-import com.terrsus.terrorwear.features.ble.model.BleState
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.sample
+import kotlinx.coroutines.flow.stateIn
 
-class ArduinoViewModel : ViewModel() {
+class BleViewModel : ViewModel() {
 
     private val observeDevices = AppContainer.observeBleDevicesUseCase
-    private val observeState = AppContainer.observeBleStateUseCase
+    private val observeScanning = AppContainer.observeBleScanningUseCase
     private val startScan = AppContainer.startBleScanUseCase
     private val stopScan = AppContainer.stopBleScanUseCase
 
@@ -24,8 +29,7 @@ class ArduinoViewModel : ViewModel() {
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val isScanning: StateFlow<Boolean> =
-        observeState()
-            .map { state -> state is BleState.Scanning }
+        observeScanning()
             .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     private val _selectedDevice = MutableStateFlow<BleDevice?>(null)
@@ -54,4 +58,24 @@ class ArduinoViewModel : ViewModel() {
     fun showStatus(msg: String) {
         _statusMessage.value = msg
     }
+
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery
+
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
+
+    val filteredResults: StateFlow<List<BleDevice>> =
+        combine(scanResults, searchQuery) { devices, query ->
+            if (query.isBlank()) devices
+            else devices.filter { d ->
+                d.name?.contains(query, ignoreCase = true) == true ||
+                        d.address.contains(query, ignoreCase = true)
+            }
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    val deviceCount: StateFlow<Int> =
+        filteredResults.map { it.size }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 }

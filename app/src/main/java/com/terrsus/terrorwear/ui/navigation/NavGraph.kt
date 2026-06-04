@@ -9,20 +9,20 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.terrsus.terrorwear.ui.screens.dashboard.DashboardScreen
-import com.terrsus.terrorwear.ui.screens.arduino.ArduinoScreen
+import com.terrsus.terrorwear.ui.screens.ble.BleScreen
 import com.terrsus.terrorwear.ui.screens.dashboard.DashboardButton
 import com.terrsus.terrorwear.ui.screens.gatt.GattScreen
 import com.terrsus.terrorwear.ui.screens.programassist.ProgramAssistScreen
 import com.terrsus.terrorwear.ui.screens.stratagem.StratagemScreen
 import com.terrsus.terrorwear.ui.util.BlePermissionBox
-import com.terrsus.terrorwear.viewmodel.ArduinoViewModel
+import com.terrsus.terrorwear.viewmodel.BleViewModel
 import com.terrsus.terrorwear.viewmodel.GattViewModel
 import com.terrsus.terrorwear.viewmodel.GattViewModelFactory
 
 object Routes {
     const val DASHBOARD = "dashboard"
     const val STRATAGEM = "stratagem"
-    const val ARDUINO = "arduino"
+    const val BLE = "ble"
     const val PROGRAM_ASSIST = "program_assist"
 }
 
@@ -44,7 +44,7 @@ fun NavGraph(navController: NavHostController) {
         composable(Routes.DASHBOARD) {
             val dashboardButtons = listOf(
                 DashboardButton("Stratagem", Routes.STRATAGEM),
-                DashboardButton("Arduino", Routes.ARDUINO),
+                DashboardButton("Arduino", Routes.BLE),
                 DashboardButton("Program Assist", Routes.PROGRAM_ASSIST)
             )
 
@@ -58,10 +58,10 @@ fun NavGraph(navController: NavHostController) {
             StratagemScreen()
         }
 
-        composable(Routes.ARDUINO) {
-            val viewModel: ArduinoViewModel = viewModel()
+        composable(Routes.BLE) {
+            val viewModel: BleViewModel = viewModel()
             BlePermissionBox {
-                ArduinoScreen(viewModel, navController)
+                BleScreen(viewModel, navController)
             }
         }
         composable(
