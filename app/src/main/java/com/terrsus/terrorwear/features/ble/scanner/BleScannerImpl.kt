@@ -6,7 +6,7 @@ import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.Context
 import android.util.Log
-import com.terrsus.terrorwear.features.ble.model.BleDevice
+import com.terrsus.terrorwear.domain.ble.model.BleDevice
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

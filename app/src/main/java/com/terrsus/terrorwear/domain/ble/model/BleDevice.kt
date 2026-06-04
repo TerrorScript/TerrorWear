@@ -1,4 +1,4 @@
-package com.terrsus.terrorwear.features.ble.model
+package com.terrsus.terrorwear.domain.ble.model
 
 data class BleDevice(
     val address: String,

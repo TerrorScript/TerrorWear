@@ -1,8 +1,7 @@
 package com.terrsus.terrorwear.domain.usecase
 
-import com.terrsus.terrorwear.data.repository.BleRepository
-import com.terrsus.terrorwear.features.ble.connection.BleManager
-import com.terrsus.terrorwear.features.ble.model.BleDevice
+import com.terrsus.terrorwear.data.ble.BleRepository
+import com.terrsus.terrorwear.domain.ble.model.BleDevice
 import kotlinx.coroutines.flow.StateFlow
 
 class ObserveBleDevicesUseCase(

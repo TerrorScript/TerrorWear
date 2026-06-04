@@ -20,7 +20,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
 import androidx.navigation.NavHostController
 import com.terrsus.terrorwear.ui.components.BottomStatusPopup
-import com.terrsus.terrorwear.viewmodel.BleViewModel
+import com.terrsus.terrorwear.viewmodel.ble.BleViewModel
 import kotlinx.coroutines.delay
 
 @Composable

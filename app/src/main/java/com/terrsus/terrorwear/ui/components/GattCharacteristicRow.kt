@@ -1,4 +1,4 @@
-package com.terrsus.terrorwear.ui.screens.gatt
+package com.terrsus.terrorwear.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

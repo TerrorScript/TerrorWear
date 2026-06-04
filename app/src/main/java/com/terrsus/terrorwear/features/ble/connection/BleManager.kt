@@ -1,7 +1,7 @@
 package com.terrsus.terrorwear.features.ble.connection
 
 import android.annotation.SuppressLint
-import com.terrsus.terrorwear.features.ble.model.BleDevice
+import com.terrsus.terrorwear.domain.ble.model.BleDevice
 import com.terrsus.terrorwear.features.ble.scanner.BleScannerClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

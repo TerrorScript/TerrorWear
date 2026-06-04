@@ -1,9 +1,9 @@
-package com.terrsus.terrorwear.viewmodel
+package com.terrsus.terrorwear.viewmodel.ble
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.terrsus.terrorwear.AppContainer
-import com.terrsus.terrorwear.features.ble.model.BleDevice
+import com.terrsus.terrorwear.domain.ble.model.BleDevice
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,11 +26,11 @@ class BleViewModel : ViewModel() {
         .map { list -> list.distinctBy { it.address } }
         .sample(250) // emit at most every 250ms
         .distinctUntilChanged()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+        .stateIn(viewModelScope, SharingStarted.Companion.Eagerly, emptyList())
 
     val isScanning: StateFlow<Boolean> =
         observeScanning()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+            .stateIn(viewModelScope, SharingStarted.Companion.Eagerly, false)
 
     private val _selectedDevice = MutableStateFlow<BleDevice?>(null)
     val selectedDevice: StateFlow<BleDevice?> = _selectedDevice
@@ -73,9 +73,9 @@ class BleViewModel : ViewModel() {
                 d.name?.contains(query, ignoreCase = true) == true ||
                         d.address.contains(query, ignoreCase = true)
             }
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+        }.stateIn(viewModelScope, SharingStarted.Companion.Eagerly, emptyList())
 
     val deviceCount: StateFlow<Int> =
         filteredResults.map { it.size }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+            .stateIn(viewModelScope, SharingStarted.Companion.Eagerly, 0)
 }

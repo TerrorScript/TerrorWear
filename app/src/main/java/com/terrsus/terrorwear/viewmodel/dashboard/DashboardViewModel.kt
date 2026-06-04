@@ -1,4 +1,4 @@
-package com.terrsus.terrorwear.viewmodel
+package com.terrsus.terrorwear.viewmodel.dashboard
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

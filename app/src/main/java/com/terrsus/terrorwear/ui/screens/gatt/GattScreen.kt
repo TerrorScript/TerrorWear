@@ -6,12 +6,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.material.*
-import com.terrsus.terrorwear.features.ble.gatt.BleGattConnectionState
-import com.terrsus.terrorwear.features.ble.gatt.model.BleGattService
-import com.terrsus.terrorwear.viewmodel.GattViewModel
+import com.terrsus.terrorwear.ui.components.ServiceCard
+import com.terrsus.terrorwear.viewmodel.ble.GattViewModel
 
 @Composable
 fun GattScreen(viewModel: GattViewModel) {
@@ -34,7 +31,13 @@ fun GattScreen(viewModel: GattViewModel) {
             ServiceCard(
                 service = service,
                 onRead = { ch -> viewModel.read(service.uuid, ch.uuid) },
-                onWrite = { ch -> viewModel.write(service.uuid, ch.uuid, "HELLO".encodeToByteArray()) },
+                onWrite = { ch ->
+                    viewModel.write(
+                        service.uuid,
+                        ch.uuid,
+                        "HELLO".encodeToByteArray()
+                    )
+                },
                 onNotify = { ch -> viewModel.enableNotifications(service.uuid, ch.uuid) }
             )
 

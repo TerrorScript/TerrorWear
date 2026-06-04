@@ -15,8 +15,8 @@ import com.terrsus.terrorwear.ui.screens.gatt.GattScreen
 import com.terrsus.terrorwear.ui.screens.programassist.ProgramAssistScreen
 import com.terrsus.terrorwear.ui.screens.stratagem.StratagemScreen
 import com.terrsus.terrorwear.ui.util.BlePermissionBox
-import com.terrsus.terrorwear.viewmodel.BleViewModel
-import com.terrsus.terrorwear.viewmodel.GattViewModel
+import com.terrsus.terrorwear.viewmodel.ble.BleViewModel
+import com.terrsus.terrorwear.viewmodel.ble.GattViewModel
 
 object Routes {
     const val DASHBOARD = "dashboard"

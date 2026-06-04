@@ -1,6 +1,6 @@
 package com.terrsus.terrorwear.domain.usecase
 
-import com.terrsus.terrorwear.data.repository.BleRepository
+import com.terrsus.terrorwear.data.ble.BleRepository
 
 class StopBleScanUseCase(
     private val repo: BleRepository

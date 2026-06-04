@@ -13,7 +13,8 @@ import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
-import com.terrsus.terrorwear.features.ble.model.BleDevice
+import com.terrsus.terrorwear.domain.ble.model.BleDevice
+import com.terrsus.terrorwear.ui.components.BleDeviceRow
 
 @Composable
 fun BleContent(

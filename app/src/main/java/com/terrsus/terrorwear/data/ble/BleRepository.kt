@@ -1,6 +1,6 @@
-package com.terrsus.terrorwear.data.repository
+package com.terrsus.terrorwear.data.ble
 
-import com.terrsus.terrorwear.features.ble.model.BleDevice
+import com.terrsus.terrorwear.domain.ble.model.BleDevice
 import kotlinx.coroutines.flow.StateFlow
 
 interface BleRepository {

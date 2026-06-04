@@ -1,8 +1,8 @@
 package com.terrsus.terrorwear
 
 import android.content.Context
-import com.terrsus.terrorwear.data.repository.BleRepository
-import com.terrsus.terrorwear.data.repository.BleRepositoryImpl
+import com.terrsus.terrorwear.data.ble.BleRepository
+import com.terrsus.terrorwear.data.ble.BleRepositoryImpl
 import com.terrsus.terrorwear.domain.usecase.*
 import com.terrsus.terrorwear.features.ble.connection.BleManager
 import com.terrsus.terrorwear.features.ble.connection.BleProvider

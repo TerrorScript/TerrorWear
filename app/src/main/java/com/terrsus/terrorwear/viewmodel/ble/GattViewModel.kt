@@ -1,13 +1,18 @@
-package com.terrsus.terrorwear.viewmodel
+package com.terrsus.terrorwear.viewmodel.ble
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.terrsus.terrorwear.AppContainer
 import com.terrsus.terrorwear.features.ble.gatt.BleGattConnectionState
-import com.terrsus.terrorwear.features.ble.gatt.model.BleGattService
 import com.terrsus.terrorwear.features.ble.gatt.model.BleGattCharacteristicValue
+import com.terrsus.terrorwear.features.ble.gatt.model.BleGattService
 import com.terrsus.terrorwear.features.ble.gatt.model.updateValue
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -23,7 +28,7 @@ class GattViewModel(
 
     // Connection state is already a Flow from the client
     val connectionState = client.connectionState(address)
-        .stateIn(viewModelScope, SharingStarted.Eagerly, BleGattConnectionState.Disconnected)
+        .stateIn(viewModelScope, SharingStarted.Companion.Eagerly, BleGattConnectionState.Disconnected)
 
     init {
         // Start connection immediately
