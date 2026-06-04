@@ -12,6 +12,7 @@ runtime = "1.11.2"
 foundationLayout = "1.11.2"
 foundation = "1.11.2"
 material3 = "1.4.0"
+wearInput = "1.2.0"
 
 [libraries]
 play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "playServicesWearable" }
@@ -31,6 +32,7 @@ runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = 
 foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+wear-input = { group = "androidx.wear", name = "wear-input", version.ref = "wearInput" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

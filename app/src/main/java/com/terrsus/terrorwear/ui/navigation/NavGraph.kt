@@ -17,7 +17,6 @@ import com.terrsus.terrorwear.ui.screens.stratagem.StratagemScreen
 import com.terrsus.terrorwear.ui.util.BlePermissionBox
 import com.terrsus.terrorwear.viewmodel.BleViewModel
 import com.terrsus.terrorwear.viewmodel.GattViewModel
-import com.terrsus.terrorwear.viewmodel.GattViewModelFactory
 
 object Routes {
     const val DASHBOARD = "dashboard"
@@ -69,9 +68,9 @@ fun NavGraph(navController: NavHostController) {
             arguments = listOf(navArgument("address") { type = NavType.StringType })
         ) { backStackEntry ->
             val address = backStackEntry.arguments?.getString("address")!!
-            val viewModel: GattViewModel = viewModel(
-                factory = GattViewModelFactory(address)
-            )
+            val viewModel: GattViewModel = viewModel {
+                GattViewModel(address)
+            }
             GattScreen(viewModel)
         }
 

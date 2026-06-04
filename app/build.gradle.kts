@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.foundation.layout)
     implementation(libs.foundation)
     implementation(libs.material3)
+    implementation(libs.wear.input)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.tooling)
