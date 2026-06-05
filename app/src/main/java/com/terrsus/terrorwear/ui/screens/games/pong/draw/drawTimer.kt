@@ -1,5 +1,7 @@
-package com.terrsus.terrorwear.ui.screens.games.pong
+package com.terrsus.terrorwear.ui.screens.games.pong.draw
 
+import android.graphics.Color
+import android.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.nativeCanvas
 import com.terrsus.terrorwear.domain.games.pong.model.GameState
@@ -13,10 +15,10 @@ fun DrawScope.drawTimer(state: GameState) {
             formatTime(state.totalTime),
             size.width / 2,
             size.height - 20f,
-            android.graphics.Paint().apply {
-                color = android.graphics.Color.WHITE
+            Paint().apply {
+                color = Color.WHITE
                 textSize = 28f
-                textAlign = android.graphics.Paint.Align.CENTER
+                textAlign = Paint.Align.CENTER
             }
         )
     }

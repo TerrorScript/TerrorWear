@@ -1,5 +1,6 @@
 package com.terrsus.terrorwear.ui.screens.games.pong
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -17,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -27,7 +29,14 @@ import androidx.navigation.NavHostController
 import androidx.wear.compose.material.TimeText
 import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
+import com.terrsus.terrorwear.domain.games.pong.model.Collision
 import com.terrsus.terrorwear.domain.games.pong.model.PongPhase
+import com.terrsus.terrorwear.ui.screens.games.pong.draw.drawBall
+import com.terrsus.terrorwear.ui.screens.games.pong.draw.drawCenteredText
+import com.terrsus.terrorwear.ui.screens.games.pong.draw.drawField
+import com.terrsus.terrorwear.ui.screens.games.pong.draw.drawPaddles
+import com.terrsus.terrorwear.ui.screens.games.pong.draw.drawScore
+import com.terrsus.terrorwear.ui.screens.games.pong.draw.drawTimer
 import com.terrsus.terrorwear.viewmodel.games.pong.PongViewModel
 
 /**
@@ -59,6 +68,22 @@ fun PongScreen(
         }
     }
 
+    // Trigger haptics whenever relevant events are emitted
+    LaunchedEffect(Unit) {
+        viewModel.event.collect { collision ->
+            if (collision != Collision.None)
+                Log.d("Pong", "Bounce $collision")
+
+            when (collision) {
+                Collision.Wall -> haptics.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
+                Collision.Paddle -> haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                Collision.Score.Player -> haptics.performHapticFeedback(HapticFeedbackType.Reject)
+                Collision.Score.Enemy -> haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                else -> Unit
+            }
+        }
+    }
+
     // Initialize with screen size
     val config = LocalConfiguration.current
     val density = LocalDensity.current
@@ -84,7 +109,7 @@ fun PongScreen(
     Box(
         Modifier
             .fillMaxSize()
-            .let { if (phase == PongPhase.Paused) it.blur(5.dp) else it }
+            .let { if (phase == PongPhase.Paused) it.blur(3.dp) else it }
     ) {
         Canvas(
             modifier = Modifier
@@ -93,7 +118,7 @@ fun PongScreen(
                     detectTapGestures {
                         if (phase == PongPhase.Menu) {
                             haptics.performHapticFeedback(
-                                androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress
+                                HapticFeedbackType.LongPress
                             )
                             viewModel.startGame()
                         }
@@ -113,8 +138,10 @@ fun PongScreen(
 
                 PongPhase.Playing,
                 PongPhase.Paused -> {
+                    drawField(state, viewModel.rules)
                     drawBall(state)
                     drawPaddles(state)
+
                     drawScore(state)
                     drawTimer(state)
                 }
@@ -128,6 +155,6 @@ fun PongScreen(
         enter = fadeIn(tween(200)),
         exit = fadeOut(tween(200))
     ) {
-        PausedScreen(viewModel)
+        PausedOverlay(viewModel, haptics)
     }
 }

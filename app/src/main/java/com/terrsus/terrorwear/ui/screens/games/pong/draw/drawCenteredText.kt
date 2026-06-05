@@ -1,18 +1,24 @@
-package com.terrsus.terrorwear.ui.screens.games.pong
+package com.terrsus.terrorwear.ui.screens.games.pong.draw
 
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.nativeCanvas
-import com.terrsus.terrorwear.domain.games.pong.model.GameState
 
 /**
- * Draws the score.
+ * Draws centered text.
+ *
+ * @param text The text to draw.
+ * @param y Vertical position.
  */
-fun DrawScope.drawScore(state: GameState) {
+fun DrawScope.drawCenteredText(
+    text: String,
+    x: Float = size.width / 2f,
+    y: Float = size.height / 2f
+) {
     drawContext.canvas.nativeCanvas.apply {
         drawText(
-            "${state.playerScore} : ${state.enemyScore}",
-            size.width / 2,
-            80f,
+            text,
+            x,
+            y,
             android.graphics.Paint().apply {
                 color = android.graphics.Color.WHITE
                 textSize = 32f

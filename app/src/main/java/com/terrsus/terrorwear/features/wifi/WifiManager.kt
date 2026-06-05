@@ -1,30 +1,35 @@
 package com.terrsus.terrorwear.features.wifi
 
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
-
 class WifiManager {
 
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private var udp: WifiUdpClient? = null
+    private var tcp: WifiTcpClient? = null
+    private var server: WifiTcpServer? = null
 
-    private val _connected = MutableStateFlow(false)
-    val connected: StateFlow<Boolean> = _connected
-
-    private val udp = WifiUdpClient()
-
-    fun start() {
-        // TODO: connect to WiFi device
-        _connected.value = true
+    fun startUdp(port: Int): WifiUdpClient {
+        val c = WifiUdpClient(port)
+        c.start()
+        udp = c
+        return c
     }
 
-    fun stop() {
-        scope.coroutineContext.cancelChildren()
-        _connected.value = false
+    fun startTcpClient(host: String, port: Int): WifiTcpClient {
+        val c = WifiTcpClient()
+        c.connect(host, port)
+        tcp = c
+        return c
     }
 
-    fun sendUdp(data: ByteArray) {
-        udp.send(data)
+    fun startTcpServer(port: Int): WifiTcpServer {
+        val s = WifiTcpServer(port)
+        s.start()
+        server = s
+        return s
     }
 
-    fun observeUdp(): Flow<ByteArray> = udp.incoming
+    fun stopAll() {
+        udp?.stop()
+        tcp?.disconnect()
+        server?.stop()
+    }
 }

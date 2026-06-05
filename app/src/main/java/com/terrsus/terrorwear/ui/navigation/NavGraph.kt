@@ -10,8 +10,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.terrsus.terrorwear.ui.screens.dashboard.DashboardScreen
 import com.terrsus.terrorwear.ui.screens.ble.BleScreen
-import com.terrsus.terrorwear.ui.screens.dashboard.DashboardButton
+import com.terrsus.terrorwear.ui.screens.dashboard.model.DashboardButton
 import com.terrsus.terrorwear.ui.screens.games.pong.PongScreen
+import com.terrsus.terrorwear.ui.screens.games.tilt.TiltScreen
 import com.terrsus.terrorwear.ui.screens.gatt.GattScreen
 import com.terrsus.terrorwear.ui.screens.programassist.ProgramAssistScreen
 import com.terrsus.terrorwear.ui.screens.stratagem.StratagemScreen
@@ -39,8 +40,10 @@ fun NavGraph(navController: NavHostController) {
             val dashboardButtons = listOf(
                 DashboardButton("Stratagem", Route.Stratagem.route),
                 DashboardButton("Bluetooth LE", Route.Ble.route),
+                DashboardButton("WiFi (UDP & TCP)", Route.Wifi.route),
                 DashboardButton("Program Assist", Route.ProgramAssist.route),
-                DashboardButton("Pong", Route.Pong.route)
+                DashboardButton("Pong", Route.Pong.route),
+                DashboardButton("Tilt", Route.Tilt.route)
             )
 
             DashboardScreen(
@@ -80,6 +83,11 @@ fun NavGraph(navController: NavHostController) {
         // Pong
         composable(Route.Pong.route) {
             PongScreen(navController)
+        }
+
+        // Tilt
+        composable(Route.Tilt.route) {
+            TiltScreen(navController)
         }
     }
 }

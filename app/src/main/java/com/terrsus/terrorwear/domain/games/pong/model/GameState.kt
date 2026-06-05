@@ -11,7 +11,8 @@ data class GameState(
     val enemyPaddle: Paddle,
     val playerScore: Int = 0,
     val enemyScore: Int = 0,
-    val totalTime: Float = 0f
+    val totalTime: Float = 0f,
+    val lastCollision: Collision = Collision.None
 ) {
     companion object {
         /**

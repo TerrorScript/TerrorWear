@@ -1,4 +1,4 @@
-package com.terrsus.terrorwear.ui.screens.games.pong
+package com.terrsus.terrorwear.ui.screens.games.pong.draw
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color

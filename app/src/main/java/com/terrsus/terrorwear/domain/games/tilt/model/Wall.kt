@@ -1,4 +1,12 @@
 package com.terrsus.terrorwear.domain.games.tilt.model
 
-class Wall {
-}
+import com.terrsus.terrorwear.domain.math.Vector2
+
+/**
+ * Static or temporary wall segment in the Tilt game.
+ */
+data class Wall(
+    val id: Long,
+    val start: Vector2,
+    val end: Vector2
+)

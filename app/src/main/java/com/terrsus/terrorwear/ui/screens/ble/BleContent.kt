@@ -11,6 +11,7 @@ import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
+import androidx.wear.compose.material.TimeText
 import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
 import com.terrsus.terrorwear.domain.ble.model.BleDevice
@@ -29,6 +30,7 @@ fun BleContent(
     val scrollState = rememberScalingLazyListState()
 
     Scaffold(
+        timeText = { TimeText() },
         positionIndicator = {
             PositionIndicator(scalingLazyListState = scrollState)
         },

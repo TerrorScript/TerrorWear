@@ -2,14 +2,19 @@ package com.terrsus.terrorwear.viewmodel.games.pong
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.terrsus.terrorwear.domain.games.pong.logic.PongAi
 import com.terrsus.terrorwear.domain.games.pong.logic.PongPhysics
 import com.terrsus.terrorwear.domain.games.pong.logic.PongRules
-import com.terrsus.terrorwear.domain.games.pong.model.initialGameState
+import com.terrsus.terrorwear.domain.games.pong.model.Collision
 import com.terrsus.terrorwear.domain.games.pong.model.GameState
 import com.terrsus.terrorwear.domain.games.pong.model.PongPhase
+import com.terrsus.terrorwear.domain.games.pong.model.initialGameState
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 /**
  * Controls Pong game state, physics, AI, and player input.
@@ -20,10 +25,13 @@ class PongViewModel : ViewModel() {
     private val ai = PongAi()
 
     private var initialized = false
-    private lateinit var rules: PongRules
+    lateinit var rules: PongRules
 
     private val _state = MutableStateFlow(GameState.placeholder())
     val state = _state.asStateFlow()
+
+    private val _event = MutableSharedFlow<Collision>()
+    val event = _event.asSharedFlow()
 
     private val _phase = MutableStateFlow(PongPhase.Menu)
     val phase = _phase.asStateFlow()
@@ -45,21 +53,28 @@ class PongViewModel : ViewModel() {
     /**
      * Advances the game simulation.
      *
-     * @param dt Delta time in seconds.
+     * @param deltaTime Delta time in seconds.
      */
-    fun step(dt: Float) {
+    fun step(deltaTime: Float) {
         val current = _state.value
 
-        val movedBall = physics.updateBall(current.ball, dt)
-        val movedEnemy = ai.updateEnemy(current, dt, rules)
+        val movedBall = physics.updateBall(current.ball, deltaTime)
+        val movedEnemy = ai.updateEnemy(current, deltaTime, rules)
 
         var newState = current.copy(
             ball = movedBall,
             enemyPaddle = movedEnemy,
-            totalTime = current.totalTime + dt
+            totalTime = current.totalTime + deltaTime
         )
 
-        newState = rules.applyRules(newState, dt)
+        val ruleResult = rules.applyRules(newState, deltaTime)
+        newState = ruleResult.state
+        ruleResult.event?.let { event ->
+            viewModelScope.launch {
+                _event.emit(event)
+            }
+        }
+
         _state.value = newState
     }
 
@@ -112,6 +127,7 @@ class PongViewModel : ViewModel() {
                 _phase.value = PongPhase.Paused
                 true
             }
+
             PongPhase.Paused -> false
             PongPhase.Menu -> false
         }

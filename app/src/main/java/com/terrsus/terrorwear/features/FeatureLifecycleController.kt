@@ -25,7 +25,7 @@ class FeatureLifecycleController(
         (oldF - newF).forEach {
             when (it) {
                 Feature.BLE -> ble.stop()
-                Feature.WIFI -> wifi.stop()
+                Feature.WIFI -> wifi.stopAll()
                 Feature.SENSORS -> sensors.stop()
             }
         }
@@ -34,7 +34,7 @@ class FeatureLifecycleController(
         (newF - oldF).forEach {
             when (it) {
                 Feature.BLE -> ble.start()
-                Feature.WIFI -> wifi.start()
+                Feature.WIFI -> Unit //wifi.startTcpServer()
                 Feature.SENSORS -> sensors.start()
             }
         }

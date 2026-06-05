@@ -12,6 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
@@ -24,7 +26,10 @@ import com.terrsus.terrorwear.viewmodel.games.pong.PongViewModel
  * @param viewModel ViewModel controlling game state.
  */
 @Composable
-fun PausedScreen(viewModel: PongViewModel) {
+fun PausedOverlay(
+    viewModel: PongViewModel,
+    haptics: HapticFeedback
+) {
     Box(
         Modifier
             .fillMaxSize()
@@ -40,7 +45,10 @@ fun PausedScreen(viewModel: PongViewModel) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { viewModel.resume() },
+            onClick = {
+                haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                viewModel.resume()
+            },
             modifier = Modifier
                 .fillMaxWidth(0.4f)
                 .height(30.dp),
@@ -51,7 +59,10 @@ fun PausedScreen(viewModel: PongViewModel) {
         Spacer(modifier = Modifier.height(4.dp))
 
         Button(
-            onClick = { viewModel.restart() },
+            onClick = {
+                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                viewModel.restart()
+            },
             modifier = Modifier
                 .fillMaxWidth(0.4f)
                 .height(30.dp),
