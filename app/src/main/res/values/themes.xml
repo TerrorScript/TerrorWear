@@ -1,0 +1,8 @@
+<resources>
+
+    <!-- Minimal XML theme used after the splash screen -->
+    <style name="Theme.TerrorWear" parent="@android:style/Theme.DeviceDefault">
+        <!-- Empty on purpose. Compose handles the real styling. -->
+    </style>
+
+</resources>

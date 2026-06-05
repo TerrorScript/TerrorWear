@@ -3,12 +3,18 @@ package com.terrsus.terrorwear.domain.games.pong.logic
 import com.terrsus.terrorwear.domain.games.pong.model.Ball
 import com.terrsus.terrorwear.domain.games.pong.model.GameState
 import com.terrsus.terrorwear.domain.games.pong.model.Paddle
-import com.terrsus.terrorwear.domain.games.pong.model.Vec2
+import com.terrsus.terrorwear.domain.math.Vector2
 import kotlin.math.abs
 
 private const val PLAYFIELD_MARGIN = 60f
-private const val BALL_ACCELERATION = 1.05f   // +5% per paddle hit
+private const val BALL_ACCELERATION = 1.05f
 
+/**
+ * Handles Pong game rules such as collisions, scoring, and ball reset.
+ *
+ * @param screenWidth Width of the playfield in pixels.
+ * @param screenHeight Height of the playfield in pixels.
+ */
 class PongRules(
     val screenWidth: Float,
     val screenHeight: Float
@@ -18,16 +24,23 @@ class PongRules(
     val top = PLAYFIELD_MARGIN
     val bottom = screenHeight - PLAYFIELD_MARGIN
 
+    /**
+     * Applies all game rules for the current frame.
+     *
+     * @param state Current game state.
+     * @param dt Delta time in seconds.
+     */
     fun applyRules(state: GameState, dt: Float): GameState {
         var newState = state
-
         newState = bounceOffWalls(newState)
         newState = bounceOffPaddles(newState)
         newState = checkScore(newState)
-
         return newState
     }
 
+    /**
+     * Handles ball collisions with the top and bottom walls.
+     */
     private fun bounceOffWalls(state: GameState): GameState {
         var ball = state.ball
 
@@ -48,6 +61,9 @@ class PongRules(
         return state.copy(ball = ball)
     }
 
+    /**
+     * Handles ball collisions with both paddles.
+     */
     private fun bounceOffPaddles(state: GameState): GameState {
         val ball = state.ball
 
@@ -68,6 +84,9 @@ class PongRules(
         return state
     }
 
+    /**
+     * Checks if the ball intersects a paddle.
+     */
     private fun intersects(ball: Ball, paddle: Paddle): Boolean {
         val withinX =
             ball.position.x + ball.radius > paddle.position.x &&
@@ -80,6 +99,9 @@ class PongRules(
         return withinX && withinY
     }
 
+    /**
+     * Checks if a point has been scored and resets the ball if needed.
+     */
     private fun checkScore(state: GameState): GameState {
         val ball = state.ball
 
@@ -100,14 +122,19 @@ class PongRules(
         return state
     }
 
+    /**
+     * Resets the ball to the center with a random vertical velocity.
+     *
+     * @param directionRight If true, ball moves right; otherwise left.
+     */
     private fun resetBall(directionRight: Boolean): Ball {
         val speed = 140f
         val vx = if (directionRight) speed else -speed
         val vy = listOf(-80f, -40f, 40f, 80f).random()
 
         return Ball(
-            position = Vec2(screenWidth / 2f, screenHeight / 2f),
-            velocity = Vec2(vx, vy),
+            position = Vector2(screenWidth / 2f, screenHeight / 2f),
+            velocity = Vector2(vx, vy),
             radius = 6f
         )
     }

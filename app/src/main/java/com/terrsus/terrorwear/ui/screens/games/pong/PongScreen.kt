@@ -1,41 +1,40 @@
 package com.terrsus.terrorwear.ui.screens.games.pong
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.withFrameNanos
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.wear.compose.material.Button
-import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
-import com.terrsus.terrorwear.domain.games.pong.model.GameState
+import androidx.wear.compose.material.Vignette
+import androidx.wear.compose.material.VignettePosition
 import com.terrsus.terrorwear.domain.games.pong.model.PongPhase
 import com.terrsus.terrorwear.viewmodel.games.pong.PongViewModel
 
 /**
- * Main Pong game screen. Handles rendering, input, and frame updates.
+ * Pong game screen. Draws the game, handles input, and runs the frame loop.
+ *
+ * @param navController Navigation controller for back navigation.
+ * @param viewModel ViewModel containing game state and logic.
  */
 @Composable
 fun PongScreen(
@@ -44,29 +43,30 @@ fun PongScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val phase by viewModel.phase.collectAsState()
+    val haptics = LocalHapticFeedback.current
 
     // Game loop
     LaunchedEffect(Unit) {
-        var lastTime = 0L
+        var last = 0L
         while (true) {
-            withFrameNanos { time ->
-                if (lastTime != 0L && phase == PongPhase.Playing) {
-                    val dt = (time - lastTime) / 1_000_000_000f
+            withFrameNanos { now ->
+                if (last != 0L && phase == PongPhase.Playing) {
+                    val dt = (now - last) / 1_000_000_000f
                     viewModel.step(dt)
                 }
-                lastTime = time
+                last = now
             }
         }
     }
 
-    // Screen size → ViewModel initialization
-    val configuration = LocalConfiguration.current
+    // Initialize with screen size
+    val config = LocalConfiguration.current
     val density = LocalDensity.current
 
     LaunchedEffect(Unit) {
-        val widthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
-        val heightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
-        viewModel.initialize(widthPx, heightPx)
+        val w = with(density) { config.screenWidthDp.dp.toPx() }
+        val h = with(density) { config.screenHeightDp.dp.toPx() }
+        viewModel.initialize(w, h)
     }
 
     // Back button
@@ -75,8 +75,12 @@ fun PongScreen(
         if (!handled) navController.popBackStack()
     }
 
+    // Wear OS vignette
+    Vignette(vignettePosition = VignettePosition.Top)
+
     TimeText()
 
+    // Game canvas
     Box(
         Modifier
             .fillMaxSize()
@@ -87,15 +91,23 @@ fun PongScreen(
                 .fillMaxSize()
                 .pointerInput(Unit) {
                     detectTapGestures {
-                        if (phase == PongPhase.Menu) viewModel.startGame()
+                        if (phase == PongPhase.Menu) {
+                            haptics.performHapticFeedback(
+                                androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress
+                            )
+                            viewModel.startGame()
+                        }
                     }
-                    detectDragGestures { _, dragAmount ->
-                        viewModel.onPlayerDrag(dragAmount.y)
+                }
+                .pointerInput(Unit) {
+                    detectDragGestures { _, drag ->
+                        viewModel.onPlayerDrag(drag.y)
                     }
                 }
         ) {
             when (phase) {
                 PongPhase.Menu -> {
+                    drawCenteredText("Pong", y = size.height * 0.3f)
                     drawCenteredText("Tap to Start")
                 }
 
@@ -110,30 +122,12 @@ fun PongScreen(
         }
     }
 
-    if (phase == PongPhase.Paused)
-        PausedScreen(viewModel)
-}
-
-/**
- * Pause overlay with resume and restart buttons.
- */
-@Composable
-fun PausedScreen(viewModel: PongViewModel) {
-    Box(
-        Modifier
-            .fillMaxSize()
-            .blur(20.dp)
-    )
-    Column(
-        Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    // Pause overlay
+    AnimatedVisibility(
+        visible = phase == PongPhase.Paused,
+        enter = fadeIn(tween(200)),
+        exit = fadeOut(tween(200))
     ) {
-        Button(onClick = { viewModel.resume() }) {
-            Text("Resume")
-        }
-        Button(onClick = { viewModel.restart() }) {
-            Text("Restart")
-        }
+        PausedScreen(viewModel)
     }
 }

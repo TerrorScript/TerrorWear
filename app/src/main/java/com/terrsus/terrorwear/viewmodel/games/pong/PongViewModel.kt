@@ -1,17 +1,18 @@
 package com.terrsus.terrorwear.viewmodel.games.pong
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.terrsus.terrorwear.domain.games.pong.logic.PongAi
 import com.terrsus.terrorwear.domain.games.pong.logic.PongPhysics
 import com.terrsus.terrorwear.domain.games.pong.logic.PongRules
-import com.terrsus.terrorwear.domain.games.pong.logic.initialGameState
+import com.terrsus.terrorwear.domain.games.pong.model.initialGameState
 import com.terrsus.terrorwear.domain.games.pong.model.GameState
 import com.terrsus.terrorwear.domain.games.pong.model.PongPhase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * ViewModel controlling Pong game state, physics, AI, and player input.
+ * Controls Pong game state, physics, AI, and player input.
  */
 class PongViewModel : ViewModel() {
 
@@ -28,7 +29,10 @@ class PongViewModel : ViewModel() {
     val phase = _phase.asStateFlow()
 
     /**
-     * Initializes the game once screen size is known.
+     * Initializes the game using screen size.
+     *
+     * @param width Screen width in pixels.
+     * @param height Screen height in pixels.
      */
     fun initialize(width: Float, height: Float) {
         if (initialized) return
@@ -39,7 +43,9 @@ class PongViewModel : ViewModel() {
     }
 
     /**
-     * Advances the game simulation by dt seconds.
+     * Advances the game simulation.
+     *
+     * @param dt Delta time in seconds.
      */
     fun step(dt: Float) {
         val current = _state.value
@@ -58,9 +64,13 @@ class PongViewModel : ViewModel() {
     }
 
     /**
-     * Moves the player's paddle vertically based on drag input.
+     * Moves the player's paddle vertically.
+     *
+     * @param deltaY Drag distance in pixels.
      */
     fun onPlayerDrag(deltaY: Float) {
+        Log.d("PONG", "Drag: $deltaY")
+
         val current = _state.value
         val paddle = current.playerPaddle
 
@@ -92,8 +102,9 @@ class PongViewModel : ViewModel() {
     }
 
     /**
-     * Handles Wear OS back button behavior.
-     * @return true if consumed, false if system should handle it.
+     * Handles back button behavior.
+     *
+     * @return true if consumed.
      */
     fun onBackPressed(): Boolean {
         return when (phase.value) {
@@ -107,7 +118,7 @@ class PongViewModel : ViewModel() {
     }
 
     /**
-     * Resets the game to the menu state.
+     * Resets the game and returns to menu.
      */
     fun restart() {
         _state.value = initialGameState(

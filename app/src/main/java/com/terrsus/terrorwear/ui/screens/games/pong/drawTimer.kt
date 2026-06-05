@@ -24,6 +24,8 @@ fun DrawScope.drawTimer(state: GameState) {
 
 /**
  * Formats seconds as MM:SS.
+ *
+ * @param seconds the time, in seconds, to format.
  */
 private fun formatTime(seconds: Float): String {
     val total = seconds.toInt()

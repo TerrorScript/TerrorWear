@@ -11,12 +11,12 @@ import com.terrsus.terrorwear.domain.games.pong.model.GameState
  */
 fun DrawScope.drawPaddles(state: GameState) {
     drawRect(
-        color = Color.White,
+        color = Color.Blue,
         topLeft = Offset(state.playerPaddle.position.x, state.playerPaddle.position.y),
         size = Size(state.playerPaddle.width, state.playerPaddle.height)
     )
     drawRect(
-        color = Color.White,
+        color = Color.Red,
         topLeft = Offset(state.enemyPaddle.position.x, state.enemyPaddle.position.y),
         size = Size(state.enemyPaddle.width, state.enemyPaddle.height)
     )

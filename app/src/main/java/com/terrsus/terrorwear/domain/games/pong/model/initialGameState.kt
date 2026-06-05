@@ -1,10 +1,15 @@
-package com.terrsus.terrorwear.domain.games.pong.logic
+package com.terrsus.terrorwear.domain.games.pong.model
 
-import com.terrsus.terrorwear.domain.games.pong.model.Ball
-import com.terrsus.terrorwear.domain.games.pong.model.GameState
-import com.terrsus.terrorwear.domain.games.pong.model.Paddle
-import com.terrsus.terrorwear.domain.games.pong.model.Vec2
+import com.terrsus.terrorwear.domain.games.pong.logic.PongRules
+import com.terrsus.terrorwear.domain.math.Vector2
 
+/**
+ * Creates the initial game state using screen size and playfield rules.
+ *
+ * @param screenWidth Width of the playfield.
+ * @param screenHeight Height of the playfield.
+ * @param rules Playfield boundaries.
+ */
 fun initialGameState(
     screenWidth: Float,
     screenHeight: Float,
@@ -12,8 +17,8 @@ fun initialGameState(
 ): GameState {
 
     val ball = Ball(
-        position = Vec2(screenWidth / 2f, screenHeight / 2f),
-        velocity = Vec2(120f, 80f),
+        position = Vector2(screenWidth / 2f, screenHeight / 2f),
+        velocity = Vector2(120f, 80f),
         radius = 6f
     )
 
@@ -21,8 +26,8 @@ fun initialGameState(
     val paddleHeight = 40f
 
     val player = Paddle(
-        position = Vec2(
-            x = rules.left + 10f, // inset from safe boundary
+        position = Vector2(
+            x = rules.left + 10f,
             y = (screenHeight - paddleHeight) / 2f
         ),
         width = paddleWidth,
@@ -30,7 +35,7 @@ fun initialGameState(
     )
 
     val enemy = Paddle(
-        position = Vec2(
+        position = Vector2(
             x = rules.right - paddleWidth - 10f,
             y = (screenHeight - paddleHeight) / 2f
         ),
@@ -42,10 +47,8 @@ fun initialGameState(
         ball = ball,
         playerPaddle = player,
         enemyPaddle = enemy,
-
         playerScore = 0,
         enemyScore = 0,
-
         totalTime = 0f
     )
 }
