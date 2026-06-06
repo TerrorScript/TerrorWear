@@ -1,13 +1,17 @@
 package com.terrsus.terrorwear.ui.screens.dashboard
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -19,7 +23,7 @@ import androidx.wear.tooling.preview.devices.WearDevices
 import com.terrsus.terrorwear.R
 import com.terrsus.terrorwear.TerrorWearApp
 import com.terrsus.terrorwear.ui.components.BackgroundGradient
-import com.terrsus.terrorwear.ui.screens.dashboard.model.DashboardButton
+import com.terrsus.terrorwear.ui.navigation.Route
 import com.terrsus.terrorwear.viewmodel.dashboard.DashboardViewModel
 
 /**
@@ -31,13 +35,13 @@ import com.terrsus.terrorwear.viewmodel.dashboard.DashboardViewModel
  * - consistent chip widths
  * - icon fade animation based on scroll position
  *
- * @param buttons List of dashboard buttons.
+ * @param routes List of dashboard buttons.
  * @param onNavigate Called when a button is pressed.
  * @param viewModel DashboardViewModel instance.
  */
 @Composable
 fun DashboardScreen(
-    buttons: List<DashboardButton>,
+    routes: List<Route>,
     onNavigate: (route: String) -> Unit,
     viewModel: DashboardViewModel = viewModel()
 ) {
@@ -51,59 +55,54 @@ fun DashboardScreen(
         BackgroundGradient()
 
         ScalingLazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize(),
             state = listState,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
                 Text(
-                    text = stringResource(R.string.dashboard_title),
-                    style = MaterialTheme.typography.title2,
+                    text = "TerrorWear",
+                    style = MaterialTheme.typography.title1,
                     color = MaterialTheme.colors.primary,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
                 )
+                Spacer(modifier = Modifier.height(60.dp))
             }
 
-            items(buttons.size) { index ->
-                val button = buttons[index]
+            items(routes.size) { index ->
+                val route = routes[index]
 
-                // Fade icon based on scroll position
-                val fade = remember {
-                    derivedStateOf {
-                        val center = listState.centerItemIndex
-                        val dist = kotlin.math.abs(center - index)
-                        (1f - dist * 0.4f).coerceIn(0f, 1f)
-                    }
-                }
-
+                val tint = colorResource(route.type.colorRes)
                 Chip(
                     modifier = Modifier
-                        .fillMaxWidth(0.85f)
+                        .fillMaxWidth(0.9f)
                         .padding(vertical = 4.dp),
+                    colors = ChipDefaults.chipColors(
+                        backgroundColor = tint.copy(alpha = 0.2f),
+                    ),
+                    border = ChipDefaults.chipBorder(
+                        borderStroke = BorderStroke(1.dp, tint),
+                    ),
                     label = {
                         Text(
-                            text = button.label,
+                            text = route.name,
                             maxLines = 1
                         )
                     },
-                    icon = {
-                        // You don't have icons yet — fade logic still works
-                        Box(
-                            modifier = Modifier.size(24.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            // Placeholder circle that fades
-                            Canvas(modifier = Modifier.fillMaxSize()) {
-                                drawCircle(
-                                    color = Color.White.copy(alpha = fade.value)
-                                )
-                            }
-                        }
+                    secondaryLabel = {
+                        Text(
+                            text = route.summary
+                        )
                     },
-                    onClick = { onNavigate(button.route) }
+                    icon = {
+                        Icon(
+                            painter = painterResource(route.icon),
+                            contentDescription = route.name,
+                            tint = tint,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    },
+                    onClick = { onNavigate(route.path) }
                 )
             }
         }

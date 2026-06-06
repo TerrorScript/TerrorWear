@@ -1,6 +1,7 @@
 package com.terrsus.terrorwear
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -41,18 +42,11 @@ class MainActivity : ComponentActivity() {
         // Use a simple system theme for Wear OS
         setTheme(android.R.style.Theme_DeviceDefault)
 
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
         // Set the root composable for the app
         setContent {
             TerrorWearApp()
         }
     }
-}
-
-/**
- * Preview of the app on a small round Wear OS device.
- */
-@Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
-@Composable
-fun DefaultPreview() {
-    TerrorWearApp()
 }

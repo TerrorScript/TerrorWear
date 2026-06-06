@@ -10,7 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.terrsus.terrorwear.ui.screens.dashboard.DashboardScreen
 import com.terrsus.terrorwear.ui.screens.ble.BleScreen
-import com.terrsus.terrorwear.ui.screens.dashboard.model.DashboardButton
+import com.terrsus.terrorwear.ui.screens.cameraremote.CameraRemoteScreen
 import com.terrsus.terrorwear.ui.screens.games.pong.PongScreen
 import com.terrsus.terrorwear.ui.screens.games.tilt.TiltScreen
 import com.terrsus.terrorwear.ui.screens.gatt.GattScreen
@@ -32,33 +32,55 @@ fun NavGraph(navController: NavHostController) {
 
     NavHost(
         navController = navController,
-        startDestination = Route.Dashboard.route
+        startDestination = Route.Dashboard.path
     ) {
-
         // Dashboard
-        composable(Route.Dashboard.route) {
+        composable(Route.Dashboard.path) {
             val dashboardButtons = listOf(
-                DashboardButton("Stratagem", Route.Stratagem.route),
-                DashboardButton("Bluetooth LE", Route.Ble.route),
-                DashboardButton("WiFi (UDP & TCP)", Route.Wifi.route),
-                DashboardButton("Program Assist", Route.ProgramAssist.route),
-                DashboardButton("Pong", Route.Pong.route),
-                DashboardButton("Tilt", Route.Tilt.route)
+                Route.ProgramAssist,
+                Route.CameraRemote,
+
+                Route.Pong,
+                Route.Tilt,
+                Route.Stratagem,
+
+                Route.Ble,
+                Route.Wifi,
             )
 
             DashboardScreen(
-                buttons = dashboardButtons,
+                routes = dashboardButtons,
                 onNavigate = { route -> navController.navigate(route) }
             )
         }
 
+        // Program Assist
+        composable(Route.ProgramAssist.path) {
+            ProgramAssistScreen()
+        }
+
+        // Camera Remote
+        composable(Route.CameraRemote.path) {
+            CameraRemoteScreen()
+        }
+
         // Stratagem
-        composable(Route.Stratagem.route) {
+        composable(Route.Stratagem.path) {
             StratagemScreen()
         }
 
+        // Pong
+        composable(Route.Pong.path) {
+            PongScreen(navController)
+        }
+
+        // Tilt
+        composable(Route.Tilt.path) {
+            TiltScreen(navController)
+        }
+
         // BLE
-        composable(Route.Ble.route) {
+        composable(Route.Ble.path) {
             val viewModel: BleViewModel = viewModel()
             BlePermissionBox {
                 BleScreen(viewModel, navController)
@@ -67,7 +89,7 @@ fun NavGraph(navController: NavHostController) {
 
         // GATT
         composable(
-            route = Route.Gatt.route,
+            route = Route.Gatt.path,
             arguments = listOf(navArgument("address") { type = NavType.StringType })
         ) { backStackEntry ->
             val address = backStackEntry.arguments?.getString("address")!!
@@ -75,19 +97,5 @@ fun NavGraph(navController: NavHostController) {
             GattScreen(viewModel)
         }
 
-        // Program Assist
-        composable(Route.ProgramAssist.route) {
-            ProgramAssistScreen()
-        }
-
-        // Pong
-        composable(Route.Pong.route) {
-            PongScreen(navController)
-        }
-
-        // Tilt
-        composable(Route.Tilt.route) {
-            TiltScreen(navController)
-        }
     }
 }

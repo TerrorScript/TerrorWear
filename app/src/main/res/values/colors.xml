@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Colors for the displayed module types. -->
+    <color name="moduletype_debug">#66BB6A</color>
+    <color name="moduletype_tool">#669999</color>
+    <color name="moduletype_game">#ffd9b3</color>
+    <color name="moduletype_system">#9FA8DA</color>
+</resources>

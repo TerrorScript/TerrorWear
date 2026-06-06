@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.MaterialTheme
@@ -34,8 +35,8 @@ fun BleDeviceRow(
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.85f)
-                .height(100.dp)
-                .padding(6.dp)
+                .height(80.dp)
+                .padding(2.dp)
                 .background(
                     color = MaterialTheme.colors.surface,
                     shape = RoundedCornerShape(40)
@@ -44,7 +45,7 @@ fun BleDeviceRow(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
                 ) { onSelectDevice(device) }
-                .padding(12.dp),
+                .padding(8.dp),
             contentAlignment = Alignment.Center
         ) {
             Column(
@@ -54,18 +55,21 @@ fun BleDeviceRow(
                 val name = device.name ?: "Unknown"
                 Text(
                     name,
-                    style = if (name.length > 12)
-                        MaterialTheme.typography.caption1
-                    else
-                        MaterialTheme.typography.title2,
+                    style = MaterialTheme.typography.caption1, //MaterialTheme.typography.title2,
                     maxLines = 1,
                     softWrap = false,
                     overflow = TextOverflow.Ellipsis
                 )
                 Spacer(Modifier.height(2.dp))
-                Text(device.address, style = MaterialTheme.typography.caption2)
+                Text(
+                    device.address,
+                    style = MaterialTheme.typography.caption2
+                )
                 Spacer(Modifier.height(2.dp))
-                Text("RSSI: ${device.rssi} dBm", style = MaterialTheme.typography.caption2)
+                Text(
+                    "RSSI: ${device.rssi} dBm",
+                    style = MaterialTheme.typography.caption2
+                )
             }
         }
     }
