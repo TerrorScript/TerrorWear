@@ -2,21 +2,25 @@ package com.terrsus.terrorwear.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.terrsus.terrorwear.LocalAppContainer
 import com.terrsus.terrorwear.ui.screens.dashboard.DashboardScreen
 import com.terrsus.terrorwear.ui.screens.ble.BleScreen
 import com.terrsus.terrorwear.ui.screens.cameraremote.CameraRemoteScreen
-import com.terrsus.terrorwear.ui.screens.games.pong.PongScreen
-import com.terrsus.terrorwear.ui.screens.games.tilt.TiltScreen
-import com.terrsus.terrorwear.ui.screens.gatt.GattScreen
-import com.terrsus.terrorwear.ui.screens.programassist.ProgramAssistScreen
-import com.terrsus.terrorwear.ui.screens.stratagem.StratagemScreen
-import com.terrsus.terrorwear.ui.util.BlePermissionBox
+import com.terrsus.terrorwear.modules.games.pong.ui.PongScreen
+import com.terrsus.terrorwear.modules.games.tilt.ui.TiltScreen
+import com.terrsus.terrorwear.modules.ble.ui.gatt.GattScreen
+import com.terrsus.terrorwear.modules.tools.programassist.ui.ProgramAssistScreen
+import com.terrsus.terrorwear.modules.games.stratagem.ui.StratagemScreen
+import com.terrsus.terrorwear.features.ble.ui.components.BlePermissionBox
+import com.terrsus.terrorwear.modules.settings.ui.SettingsScreen
+import com.terrsus.terrorwear.modules.settings.viewmodel.SettingsViewModel
 import com.terrsus.terrorwear.viewmodel.ble.BleViewModel
 import com.terrsus.terrorwear.viewmodel.ble.GattViewModel
 
@@ -37,6 +41,8 @@ fun NavGraph(navController: NavHostController) {
         // Dashboard
         composable(Route.Dashboard.path) {
             val dashboardButtons = listOf(
+                Route.Settings,
+
                 Route.ProgramAssist,
                 Route.CameraRemote,
 
@@ -52,6 +58,14 @@ fun NavGraph(navController: NavHostController) {
                 routes = dashboardButtons,
                 onNavigate = { route -> navController.navigate(route) }
             )
+        }
+
+        // Settings
+        composable(Route.Settings.path) {
+            val localAppContainer = LocalAppContainer.current
+            val viewModel = remember { SettingsViewModel(localAppContainer.settingsInteractor) }
+
+            SettingsScreen(viewModel)
         }
 
         // Program Assist
@@ -81,9 +95,8 @@ fun NavGraph(navController: NavHostController) {
 
         // BLE
         composable(Route.Ble.path) {
-            val viewModel: BleViewModel = viewModel()
             BlePermissionBox {
-                BleScreen(viewModel, navController)
+                BleScreen(navController)
             }
         }
 

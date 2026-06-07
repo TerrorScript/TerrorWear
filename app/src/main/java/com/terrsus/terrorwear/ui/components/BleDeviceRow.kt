@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
-import com.terrsus.terrorwear.domain.ble.model.BleDevice
+import com.terrsus.terrorwear.features.ble.domain.model.BleDevice
 
 @Composable
 fun BleDeviceRow(

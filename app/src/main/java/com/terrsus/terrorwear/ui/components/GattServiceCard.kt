@@ -12,8 +12,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Card
 import androidx.wear.compose.material.Text
-import com.terrsus.terrorwear.features.ble.gatt.model.BleGattCharacteristic
-import com.terrsus.terrorwear.features.ble.gatt.model.BleGattService
+import com.terrsus.terrorwear.features.ble.common.model.BleGattCharacteristic
+import com.terrsus.terrorwear.features.ble.common.model.BleGattService
 
 @Composable
 fun ServiceCard(

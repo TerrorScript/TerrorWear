@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.devtools.ksp") version "2.0.21-1.0.25"
 }
 
 android {
@@ -64,12 +65,23 @@ dependencies {
     implementation(libs.runtime)
     implementation(libs.foundation.layout)
     implementation(libs.foundation)
-    implementation(libs.material3)
 
     // Misc
     implementation(libs.activity.compose)
     implementation(libs.core.splashscreen)
     implementation(libs.guava)
+
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+    implementation("androidx.room:room-runtime:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.6.3")
+
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
 
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")

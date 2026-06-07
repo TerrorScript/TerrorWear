@@ -10,10 +10,10 @@ import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.CompactChip
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
-import com.terrsus.terrorwear.features.ble.gatt.model.BleGattCharacteristic
-import com.terrsus.terrorwear.features.ble.gatt.model.GattProperty
-import com.terrsus.terrorwear.features.ble.gatt.model.toGattProperties
-import com.terrsus.terrorwear.features.ble.gatt.model.toPrettyString
+import com.terrsus.terrorwear.features.ble.common.model.BleGattCharacteristic
+import com.terrsus.terrorwear.features.ble.common.model.GattProperty
+import com.terrsus.terrorwear.features.ble.common.model.toGattProperties
+import com.terrsus.terrorwear.features.ble.common.util.toPrettyString
 
 @Composable
 fun CharacteristicRow(

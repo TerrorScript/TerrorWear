@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -46,7 +47,11 @@ class MainActivity : ComponentActivity() {
 
         // Set the root composable for the app
         setContent {
-            TerrorWearApp()
+            CompositionLocalProvider(
+                LocalAppContainer provides AppContainer
+            ) {
+                TerrorWearApp()
+            }
         }
     }
 }
