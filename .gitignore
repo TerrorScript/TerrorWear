@@ -5,10 +5,22 @@
 !.idea/runConfigurations/
 !.idea/vcs.xml
 
+# Kotlin compiler temp
+.kotlin/
+.kotlin/errors/
+
 # Gradle
 .gradle/
 build/
 **/build/
+
+# KSP (Kotlin Symbol Processing)
+**/ksp/
+**/generated/ksp/
+
+# Room schema outputs (optional)
+# Uncomment if you don't track schema history
+# app/schemas/
 
 # Local config
 local.properties
@@ -17,6 +29,10 @@ local.properties
 # macOS
 .DS_Store
 
+# Windows
+Thumbs.db
+desktop.ini
+
 # NDK / CMake
 .cxx/
 externalNativeBuild/
@@ -24,5 +40,25 @@ externalNativeBuild/
 # Captures
 captures/
 
-# Misc
+# Logs
 *.log
+
+# Android crash logs
+*.stacktrace
+
+# Keystore files (never commit signing keys)
+*.jks
+*.keystore
+*.pem
+*.key
+
+# APK / AAB outputs
+*.apk
+*.aab
+
+# Gradle wrapper jars (optional)
+# gradle/wrapper/gradle-wrapper.jar
+
+# Misc
+*.tmp
+*.temp
