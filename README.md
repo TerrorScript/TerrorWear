@@ -44,7 +44,7 @@ I built it around my smartwatch (Samsung Galaxy Watch5 pro), because... \
   - [HD2 Stratagem](#hd2-stratagem)
 - Debugging
   - [Bluetooth LE](#bluetooth-le)
-  - [Wi-Fi](#wifi)
+  - [Wi-Fi](#wi-fi)
   - [Inertial Measurement Unit](#inertial-measurement-unit)
 
 ## Status
@@ -63,9 +63,8 @@ _Last updated: 08/06/2026_
 
 ## Screenshots
 <p>
-  <img src="screenshots/dashboard.png" width="200"/>
-  <img src="screenshots/program_assist.png" width="200"/>
-  <img src="screenshots/pong.png" width="200"/>
+  <img src="screenshots/dashboard/dashboard.png" alt=""/>
+  <img src="screenshots/programassist/programassist_telemetry.png" alt=""/>
 </p>
 
 ## App diagram
@@ -108,7 +107,10 @@ The presenter feature will live here since it assumes an active desktop session.
 Screenshots
 </summary>
 <p>
-  <img src="screenshots/dashboard.png" width="200"/>
+  <img src="screenshots/programassist/programassist_telemetry.png" alt=""/>
+  <img src="screenshots/programassist/programassist_quicklaunch.png" alt=""/>
+  <img src="screenshots/programassist/programassist_systools.png" alt=""/>
+  <img src="screenshots/programassist/programassist_netassist.png" alt=""/>
 </p>
 </details>
 
@@ -121,7 +123,7 @@ Supports shutter, preview toggles, and basic remote actions over BLE/Wi‑Fi.
 Screenshots
 </summary>
 <p>
-  <img src="screenshots/dashboard.png" width="200"/>
+  <img src="screenshots/dashboard/dashboard.png" alt=""/>
 </p>
 </details>
 
@@ -134,7 +136,7 @@ Neat for quick orientation checks.
 Screenshots
 </summary>
 <p>
-  <img src="screenshots/dashboard.png" width="200"/>
+  <img src="screenshots/dashboard/dashboard.png" alt=""/>
 </p>
 </details>
 
@@ -147,7 +149,8 @@ It uses swipe gestures (in the future tilt input aswell), and haptics for feedba
 Screenshots
 </summary>
 <p>
-  <img src="screenshots/dashboard.png" width="200"/>
+  <img src="screenshots/pong/pong_ongoing.png" alt=""/>
+  <img src="screenshots/pong/pong_paused.png" alt=""/>
 </p>
 </details>
 
@@ -164,7 +167,7 @@ Pair to your desktop, then use directional gesture sequences to input stratagem 
 Screenshots
 </summary>
 <p>
-  <img src="screenshots/dashboard.png" width="200"/>
+  <img src="screenshots/dashboard/dashboard.png" alt=""/>
 </p>
 </details>
 
@@ -177,7 +180,8 @@ Useful for testing your custom BLE stack.
 Screenshots
 </summary>
 <p>
-  <img src="screenshots/dashboard.png" width="200"/>
+  <img src="screenshots/ble/ble_initial.png" alt=""/>
+  <img src="screenshots/ble/ble_scanned_demo.png" alt=""/>
 </p>
 </details>
 
@@ -189,7 +193,7 @@ Simple UDP/TCP test utilities for cross-device communication experiments.
 Screenshots
 </summary>
 <p>
-  <img src="screenshots/dashboard.png" width="200"/>
+  <img src="screenshots/dashboard/dashboard.png" alt=""/>
 </p>
 </details>
 
@@ -203,7 +207,7 @@ This debugging module shows a live IMU readout. I use it to test sensor accuracy
 Screenshots
 </summary>
 <p>
-  <img src="screenshots/dashboard.png" width="200"/>
+  <img src="screenshots/dashboard/dashboard.png" alt=""/>
 </p>
 </details>
 
