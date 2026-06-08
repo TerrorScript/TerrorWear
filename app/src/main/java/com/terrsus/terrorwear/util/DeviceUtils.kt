@@ -3,14 +3,15 @@ package com.terrsus.terrorwear.util
 import android.os.Build
 
 object DeviceUtils {
-    fun isEmulator(): Boolean {
+    /** `True` if the app is running inside an emulator. */
+    val isEmulator: Boolean by lazy {
         val fingerprint = Build.FINGERPRINT.lowercase()
         val model = Build.MODEL.lowercase()
         val product = Build.PRODUCT.lowercase()
         val manufacturer = Build.MANUFACTURER.lowercase()
         val brand = Build.BRAND.lowercase()
 
-        return when {
+        when {
             fingerprint.contains("generic") -> true
             fingerprint.contains("emulator") -> true
             fingerprint.contains("sdk_gphone") -> true
@@ -24,4 +25,6 @@ object DeviceUtils {
             else -> false
         }
     }
+
+
 }

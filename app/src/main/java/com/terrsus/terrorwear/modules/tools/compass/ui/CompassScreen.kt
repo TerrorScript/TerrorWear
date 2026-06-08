@@ -11,7 +11,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.wear.compose.material.Text
-import com.terrsus.terrorwear.modules.tools.compass.viewmodel.CompassViewModel
+import com.terrsus.terrorwear.AppContainer
 
 /**
  * Displays the current compass heading.
@@ -20,10 +20,8 @@ import com.terrsus.terrorwear.modules.tools.compass.viewmodel.CompassViewModel
  * A proper compass dial will be added later.
  */
 @Composable
-fun CompassScreen(
-    viewModel: CompassViewModel = viewModel()
-) {
-    val heading = viewModel.heading.collectAsState()
+fun CompassScreen() {
+    val sensorManager = AppContainer.sensorManager
 
     Box(
         modifier = Modifier
@@ -32,7 +30,7 @@ fun CompassScreen(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "${heading.value.toInt()}°",
+            text = "${sensorManager.heading.value.toInt()}°",
             textAlign = TextAlign.Center
         )
     }

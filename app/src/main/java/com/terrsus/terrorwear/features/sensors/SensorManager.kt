@@ -34,6 +34,7 @@ class SensorManager(context: Context) : SensorEventListener {
     private val _orientation = MutableStateFlow(OrientationData(0f, 0f, 0f))
     val orientation: StateFlow<OrientationData> = _orientation
 
+
     private val _accel = MutableStateFlow(AccelerationData(0f, 0f, 0f))
     val acceleration: StateFlow<AccelerationData> = _accel
 
@@ -41,6 +42,16 @@ class SensorManager(context: Context) : SensorEventListener {
 
     /** Called whenever orientation changes. */
     var onOrientationChanged: ((OrientationData) -> Unit)? = null
+// Inside SensorManager
+
+    private val _heading = MutableStateFlow(0f)
+    val heading: StateFlow<Float> = _heading
+
+    init {
+        onOrientationChanged = { data ->
+            _heading.value = data.yaw
+        }
+    }
 
     /** Called when a tap gesture is detected. */
     var onTap: (() -> Unit)? = null

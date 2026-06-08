@@ -109,7 +109,7 @@ object AppContainer {
 
     /** BLE GATT client (fake on emulator). */
     val bleGattClient: BleGattClient by lazy {
-        if (DeviceUtils.isEmulator()) FakeBleGattClient(appContext)
+        if (DeviceUtils.isEmulator) FakeBleGattClient(appContext)
         else BleGattClientImpl(appContext)
     }
 
