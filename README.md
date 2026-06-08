@@ -207,6 +207,13 @@ Screenshots
 </details>
 
 ## The Bluetooth Low Energy stack
+TerrorWear uses a small, custom BLE stack which is built around Android’s GATT APIs.
+
+It handles scanning, connecting, service discovery, reads, writes, and notifications without relying on any external libraries.
+
+The goal is to keep things predictable. There is one client, one connection flow, and there are clear domain models instead of dealing with Android's raw types.
+
+It’s built for quick experiments, like sending commands to my laptop or Arduino, and pairing with my desktop for Program Assist and Stratagem input.
 
 ---
 
@@ -222,6 +229,7 @@ You are free to:
 - Adapt - remix, transform, and build upon the material
 
 The licensor cannot revoke these freedoms as long as you follow the license terms.
+
 Under the following terms:
 - Attribution - You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
 - NonCommercial - You may not use the material for commercial purposes.
