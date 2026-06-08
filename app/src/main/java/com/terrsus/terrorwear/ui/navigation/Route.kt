@@ -46,7 +46,7 @@ sealed class Route(
     data object CameraRemote : Route(
         "camera_remote",
         "Camera Remote",
-        "Remote camera control",
+        "Take photos remotely",
         R.drawable.baseline_linked_camera_24,
         ModuleType.TOOL
     )
