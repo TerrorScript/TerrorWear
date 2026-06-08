@@ -4,8 +4,8 @@ kotlin = "2.0.21"
 
 # Compose
 composeBom = "2024.09.00"
-composeMaterial = "1.2.1"
-composeFoundation = "1.2.1"
+composeMaterial = "1.6.2"
+composeFoundation = "1.6.2"
 runtime = "1.11.2"
 foundationLayout = "1.11.2"
 foundation = "1.11.2"

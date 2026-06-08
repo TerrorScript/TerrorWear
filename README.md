@@ -118,27 +118,41 @@ Screenshots
 Controls the paired phone’s camera.
 Supports shutter, preview toggles, and basic remote actions over BLE/Wi‑Fi.
 
-<details>
-<summary>
-Screenshots
-</summary>
-<p>
-  <img src="screenshots/dashboard/dashboard.png" alt=""/>
-</p>
-</details>
+[//]: # (<details>)
+
+[//]: # (<summary>)
+
+[//]: # (Screenshots)
+
+[//]: # (</summary>)
+
+[//]: # (<p>)
+
+[//]: # (  <img src="screenshots/" alt=""/>)
+
+[//]: # (</p>)
+
+[//]: # (</details>)
 
 ### Compass
 Simple directional tool that uses the magnetometer and IMU fusion.
 Neat for quick orientation checks.
 
-<details>
-<summary>
-Screenshots
-</summary>
-<p>
-  <img src="screenshots/dashboard/dashboard.png" alt=""/>
-</p>
-</details>
+[//]: # (<details>)
+
+[//]: # (<summary>)
+
+[//]: # (Screenshots)
+
+[//]: # (</summary>)
+
+[//]: # (<p>)
+
+[//]: # (  <img src="screenshots/" alt=""/>)
+
+[//]: # (</p>)
+
+[//]: # (</details>)
 
 ### Pong
 A little minimalist wrist‑controlled Pong.
@@ -158,18 +172,41 @@ Screenshots
 A physics‑based tilt game using accelerometer data.
 You move the ball by rotating your wrist, and try to survive for as long as possible whilst dodging obstacles.
 
+[//]: # (<details>)
+
+[//]: # (<summary>)
+
+[//]: # (Screenshots)
+
+[//]: # (</summary>)
+
+[//]: # (<p>)
+
+[//]: # (  <img src="screenshots/" alt=""/>)
+
+[//]: # (</p>)
+
+[//]: # (</details>)
+
 ### HD2 Stratagem
 A Wear OS adaptation of the Helldivers 2 stratagem input system.
 Pair to your desktop, then use directional gesture sequences to input stratagem codes.
 
-<details>
-<summary>
-Screenshots
-</summary>
-<p>
-  <img src="screenshots/dashboard/dashboard.png" alt=""/>
-</p>
-</details>
+[//]: # (<details>)
+
+[//]: # (<summary>)
+
+[//]: # (Screenshots)
+
+[//]: # (</summary>)
+
+[//]: # (<p>)
+
+[//]: # (  <img src="screenshots/" alt=""/>)
+
+[//]: # (</p>)
+
+[//]: # (</details>)
 
 ### Bluetooth LE
 Raw GATT inspector and packet monitor.
@@ -188,28 +225,42 @@ Screenshots
 ### Wi-Fi
 Simple UDP/TCP test utilities for cross-device communication experiments.
 
-<details>
-<summary>
-Screenshots
-</summary>
-<p>
-  <img src="screenshots/dashboard/dashboard.png" alt=""/>
-</p>
-</details>
+[//]: # (<details>)
+
+[//]: # (<summary>)
+
+[//]: # (Screenshots)
+
+[//]: # (</summary>)
+
+[//]: # (<p>)
+
+[//]: # (  <img src="screenshots/" alt=""/>)
+
+[//]: # (</p>)
+
+[//]: # (</details>)
 
 ### Inertial Measurement Unit
 The IMU exposes accelerometer, gyroscope, and magnetometer data. With sensor fusion, this produces a (mostly) stable 3D orientation reference.
 
 This debugging module shows a live IMU readout. I use it to test sensor accuracy and to debug gesture input, orientation tracking, and fusion behavior.
 
-<details>
-<summary>
-Screenshots
-</summary>
-<p>
-  <img src="screenshots/dashboard/dashboard.png" alt=""/>
-</p>
-</details>
+[//]: # (<details>)
+
+[//]: # (<summary>)
+
+[//]: # (Screenshots)
+
+[//]: # (</summary>)
+
+[//]: # (<p>)
+
+[//]: # (  <img src="screenshots/" alt=""/>)
+
+[//]: # (</p>)
+
+[//]: # (</details>)
 
 ## The Bluetooth Low Energy stack
 TerrorWear uses a small, custom BLE stack which is built around Android’s GATT APIs.

@@ -4,74 +4,62 @@ import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
+import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import android.hardware.SensorManager as AndroidSensorManager
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
- * Centralized sensor hub for TerrorWear.
+ * Centralized access to device sensors.
  *
- * Provides:
- * - OrientationData (pitch, roll, yaw)
- * - AccelerationData (x, y, z)
- * - Tap gesture callback
- *
- * This class belongs in the *data layer* because it interacts with
- * Android hardware APIs and exposes raw sensor information.
- *
- * Higher layers (ViewModels, game logic) consume only the processed
- * values via TiltSensorRepository or other repositories.
+ * Provides orientation (yaw, pitch, roll), linear acceleration,
+ * and a simple tap callback. This class talks directly to Android's
+ * hardware APIs and exposes raw sensor data as flows.
  */
 class SensorManager(context: Context) : SensorEventListener {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-
     private val android = context.getSystemService(Context.SENSOR_SERVICE) as AndroidSensorManager
 
-    // --- Public flows --------------------------------------------------------
-
+    /** Latest orientation values in degrees. */
     private val _orientation = MutableStateFlow(OrientationData(0f, 0f, 0f))
     val orientation: StateFlow<OrientationData> = _orientation
 
-
+    /** Latest linear acceleration values in m/s². */
     private val _accel = MutableStateFlow(AccelerationData(0f, 0f, 0f))
     val acceleration: StateFlow<AccelerationData> = _accel
 
-    // --- Optional callbacks for game repositories ----------------------------
-
-    /** Called whenever orientation changes. */
-    var onOrientationChanged: ((OrientationData) -> Unit)? = null
-// Inside SensorManager
-
+    /** Convenience heading value (yaw only). */
     private val _heading = MutableStateFlow(0f)
     val heading: StateFlow<Float> = _heading
 
+    /** Optional callback for game logic when orientation changes. */
+    var onOrientationChanged: ((OrientationData) -> Unit)? = null
+
+    /** Optional callback for tap gestures. */
+    var onTap: (() -> Unit)? = null
+
     init {
+        // Keep heading updated whenever orientation changes.
         onOrientationChanged = { data ->
             _heading.value = data.yaw
         }
     }
 
-    /** Called when a tap gesture is detected. */
-    var onTap: (() -> Unit)? = null
-
-    // --- Internal sensors ----------------------------------------------------
-
-    private val rotationVector =
-        android.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
-
-    private val linearAccel =
-        android.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)
-
-    // TODO: Replace with proper gesture detector if needed
-    private val tapSensor =
-        android.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION)
-
-    // --- Lifecycle -----------------------------------------------------------
+    // Sensors we listen to.
+    private val rotationVector = android.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+    private val linearAccel = android.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)
+    private val tapSensor = android.getDefaultSensor(Sensor.TYPE_SIGNIFICANT_MOTION)
 
     /**
-     * Starts listening to all required sensors.
+     * Start receiving sensor updates.
+     *
+     * Registers listeners for rotation vector, linear acceleration,
+     * and tap detection.
      */
     fun start() {
         rotationVector?.let {
@@ -86,40 +74,50 @@ class SensorManager(context: Context) : SensorEventListener {
     }
 
     /**
-     * Stops all sensor listeners and cancels internal coroutines.
+     * Stop receiving sensor updates.
+     *
+     * Unregisters all listeners and cancels background work.
      */
     fun stop() {
         android.unregisterListener(this)
         scope.coroutineContext.cancelChildren()
     }
 
-    // --- SensorEventListener -------------------------------------------------
-
+    /**
+     * Called by Android when a sensor value changes.
+     *
+     * @param event The sensor event containing updated values.
+     */
     override fun onSensorChanged(event: SensorEvent) {
         when (event.sensor.type) {
 
             Sensor.TYPE_ROTATION_VECTOR -> {
-                val orientationData = OrientationData.fromRotationVector(event.values)
-                _orientation.value = orientationData
-                onOrientationChanged?.invoke(orientationData)
+                val data = OrientationData.fromRotationVector(event.values)
+                Log.d("SensorManager", "onSensorChanged TYPE_ROTATION_VECTOR $data}")
+                _orientation.value = data
+                onOrientationChanged?.invoke(data)
             }
 
             Sensor.TYPE_LINEAR_ACCELERATION -> {
-                val accelData = AccelerationData(
+                Log.d("SensorManager", "onSensorChanged TYPE_LINEAR_ACCELERATION ${event.values}")
+                _accel.value = AccelerationData(
                     x = event.values[0],
                     y = event.values[1],
                     z = event.values[2]
                 )
-                _accel.value = accelData
             }
 
             Sensor.TYPE_SIGNIFICANT_MOTION -> {
+                Log.d("SensorManager", "onSensorChanged TYPE_SIGNIFICANT_MOTION")
                 onTap?.invoke()
             }
         }
     }
 
+    /**
+     * Accuracy changes are ignored.
+     */
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        // Not used
+        // Not used.
     }
 }
