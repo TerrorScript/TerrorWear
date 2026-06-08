@@ -24,6 +24,7 @@ import androidx.wear.compose.foundation.AnchorType
 import androidx.wear.compose.foundation.CurvedLayout
 import androidx.wear.compose.foundation.CurvedModifier
 import androidx.wear.compose.foundation.CurvedScope
+import androidx.wear.compose.foundation.curvedComposable
 import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.size
@@ -61,15 +62,45 @@ fun ImuScreen() {
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
 
-            // --- Bezel arcs ---
-            CurvedLayout(
-                modifier = Modifier.fillMaxSize(),
-                anchor = 90f,
-                anchorType = AnchorType.Center
-            ) {
-//                ArcIndicator( orientation.value.yaw, Color.Cyan)
-//                ArcIndicator(orientation.value.pitch, Color.Green)
-//                ArcIndicator(orientation.value.roll, Color.Magenta)
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val stroke = 6.dp.toPx()
+
+                // Outermost radius (touching bezel)
+                val outerRadius = size.minDimension / 2f - stroke
+
+                // Each arc is inset by one stroke width
+                val yawRadius = outerRadius
+                val pitchRadius = outerRadius - stroke * 1.5f
+                val rollRadius = outerRadius - stroke * 3f
+                val testRadius = outerRadius - stroke * 4.5f
+
+                // Helper to draw a centered arc at a given radius
+                fun drawArcAtRadius(color: Color, sweep: Float, radius: Float) {
+                    drawArc(
+                        color = color,
+                        startAngle = -90f,
+                        sweepAngle = sweep,
+                        useCenter = false,
+                        topLeft = Offset(
+                            x = size.width / 2f - radius,
+                            y = size.height / 2f - radius
+                        ),
+                        size = androidx.compose.ui.geometry.Size(radius * 2, radius * 2),
+                        style = Stroke(width = stroke)
+                    )
+                }
+
+                // Aviation‑standard IMU colors:
+                // Yaw = Yellow
+                // Pitch = Green
+                // Roll = Magenta
+
+                drawArcAtRadius(Color.Yellow, orientation.value.yaw, yawRadius)
+                drawArcAtRadius(Color.Green, orientation.value.pitch, pitchRadius)
+                drawArcAtRadius(Color.Magenta, orientation.value.roll, rollRadius)
+
+                // Test arc (inner)
+                drawArcAtRadius(Color.Red, 20f, testRadius)
             }
 
             // --- Main content ---
@@ -104,26 +135,6 @@ fun ImuScreen() {
                 }
             }
         }
-    }
-}
-
-/**
- * Draws a curved arc indicator for a single angle.
- */
-@Composable
-fun ArcIndicator(
-    value: Float,
-    color: Color,
-    modifier: Modifier = Modifier
-) {
-    Canvas(modifier = modifier) {
-        drawArc(
-            color = color,
-            startAngle = -90f,
-            sweepAngle = (value % 360f),
-            useCenter = false,
-            style = Stroke(width = 6.dp.toPx())
-        )
     }
 }
 

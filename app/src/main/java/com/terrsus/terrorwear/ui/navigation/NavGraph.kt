@@ -2,7 +2,10 @@ package com.terrsus.terrorwear.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -10,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.terrsus.terrorwear.LocalAppContainer
+import com.terrsus.terrorwear.domain.features.FeatureLifecycleController
 import com.terrsus.terrorwear.ui.screens.dashboard.DashboardScreen
 import com.terrsus.terrorwear.ui.screens.ble.BleScreen
 import com.terrsus.terrorwear.ui.screens.cameraremote.CameraRemoteScreen
@@ -28,6 +32,35 @@ import com.terrsus.terrorwear.viewmodel.ble.GattViewModel
 
 @Composable
 fun NavGraph(navController: NavHostController) {
+    // Access the global app container (DI root)
+    val app = LocalAppContainer.current
+
+    // Create the lifecycle controller ONCE per NavGraph composition.
+    // remember {} ensures it is not recreated on every recomposition.
+    val lifecycle = remember {
+        FeatureLifecycleController(
+            ble = app.bleManager,
+            wifi = app.wifiManager,
+            sensors = app.sensorManager
+        )
+    }
+
+    // Track the previously active route.
+    // This persists across recompositions but resets if NavGraph is recreated.
+    var previousRoute by remember { mutableStateOf<Route?>(null) }
+
+    // React to changes in the `route` parameter.
+    // When the composable for a route enters composition, this fires.
+    @Composable
+    fun enter(route: Route) {
+        LaunchedEffect(route) {
+            // Notify lifecycle controller of the transition
+            lifecycle.onRouteChanged(previousRoute, route)
+
+            // Update previous route for next transition
+            previousRoute = route
+        }
+    }
 
     // Log route changes
     LaunchedEffect(navController) {
@@ -40,10 +73,13 @@ fun NavGraph(navController: NavHostController) {
         navController = navController,
         startDestination = Route.Dashboard.path
     ) {
+
         // ------------------------------
-        // Dashbboard
+        // Dashboard
         // ------------------------------
         composable(Route.Dashboard.path) {
+            enter(Route.Dashboard)
+
             val dashboardButtons = listOf(
                 Route.Settings,
 
@@ -69,8 +105,9 @@ fun NavGraph(navController: NavHostController) {
         // ------------------------------
         // System
         // ------------------------------
-        // Settings
         composable(Route.Settings.path) {
+            enter(Route.Settings)
+
             val localAppContainer = LocalAppContainer.current
             val viewModel = remember { SettingsViewModel(localAppContainer.settingsInteractor) }
 
@@ -80,61 +117,62 @@ fun NavGraph(navController: NavHostController) {
         // ------------------------------
         // Tools
         // ------------------------------
-        // Program Assist
         composable(Route.ProgramAssist.path) {
+            enter(Route.ProgramAssist)
             ProgramAssistScreen()
         }
 
-        // Camera Remote
         composable(Route.CameraRemote.path) {
+            enter(Route.CameraRemote)
             CameraRemoteScreen()
         }
 
-        // Compass
         composable(Route.Compass.path) {
+            enter(Route.Compass)
             CompassScreen()
         }
 
         // ------------------------------
         // Games
         // ------------------------------
-        // Stratagem
         composable(Route.Stratagem.path) {
+            enter(Route.Stratagem)
             StratagemScreen()
         }
 
-        // Pong
         composable(Route.Pong.path) {
+            enter(Route.Pong)
             PongScreen(navController)
         }
 
-        // Tilt
         composable(Route.Tilt.path) {
+            enter(Route.Tilt)
             TiltScreen(navController)
         }
 
         // ------------------------------
-        // Debugging / Misc
+        // Debug / Misc
         // ------------------------------
-        // BLE
         composable(Route.Ble.path) {
+            enter(Route.Ble)
             BlePermissionBox {
                 BleScreen(navController)
             }
         }
 
-        // GATT
         composable(
             route = Route.Gatt.path,
             arguments = listOf(navArgument("address") { type = NavType.StringType })
         ) { backStackEntry ->
+            enter(Route.Gatt)
+
             val address = backStackEntry.arguments?.getString("address")!!
             val viewModel: GattViewModel = viewModel { GattViewModel(address) }
             GattScreen(viewModel)
         }
 
-        // BLE
         composable(Route.Imu.path) {
+            enter(Route.Imu)
             ImuScreen()
         }
     }

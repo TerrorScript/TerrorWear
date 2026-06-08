@@ -44,6 +44,8 @@ class SensorManager(context: Context) : SensorEventListener {
     var onTap: (() -> Unit)? = null
 
     init {
+        Log.d("SensorManager", "init")
+
         // Keep heading updated whenever orientation changes.
         onOrientationChanged = { data ->
             _heading.value = data.yaw
@@ -62,6 +64,8 @@ class SensorManager(context: Context) : SensorEventListener {
      * and tap detection.
      */
     fun start() {
+        Log.d("SensorManager", "start(): registering listeners.")
+
         rotationVector?.let {
             android.registerListener(this, it, AndroidSensorManager.SENSOR_DELAY_GAME)
         }
@@ -71,6 +75,8 @@ class SensorManager(context: Context) : SensorEventListener {
         tapSensor?.let {
             android.registerListener(this, it, AndroidSensorManager.SENSOR_DELAY_NORMAL)
         }
+
+        Log.d("SensorManager", "start(): finished registering.")
     }
 
     /**
@@ -79,8 +85,12 @@ class SensorManager(context: Context) : SensorEventListener {
      * Unregisters all listeners and cancels background work.
      */
     fun stop() {
+        Log.d("SensorManager", "stop(): unregistering listeners")
+
         android.unregisterListener(this)
         scope.coroutineContext.cancelChildren()
+
+        Log.d("SensorManager", "stop(): finished cleanup")
     }
 
     /**
@@ -93,13 +103,11 @@ class SensorManager(context: Context) : SensorEventListener {
 
             Sensor.TYPE_ROTATION_VECTOR -> {
                 val data = OrientationData.fromRotationVector(event.values)
-                Log.d("SensorManager", "onSensorChanged TYPE_ROTATION_VECTOR $data}")
                 _orientation.value = data
                 onOrientationChanged?.invoke(data)
             }
 
             Sensor.TYPE_LINEAR_ACCELERATION -> {
-                Log.d("SensorManager", "onSensorChanged TYPE_LINEAR_ACCELERATION ${event.values}")
                 _accel.value = AccelerationData(
                     x = event.values[0],
                     y = event.values[1],
@@ -108,7 +116,6 @@ class SensorManager(context: Context) : SensorEventListener {
             }
 
             Sensor.TYPE_SIGNIFICANT_MOTION -> {
-                Log.d("SensorManager", "onSensorChanged TYPE_SIGNIFICANT_MOTION")
                 onTap?.invoke()
             }
         }
@@ -118,6 +125,7 @@ class SensorManager(context: Context) : SensorEventListener {
      * Accuracy changes are ignored.
      */
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+        Log.d("SensorManager", "onAccuracyChanged $sensor, $accuracy")
         // Not used.
     }
 }
