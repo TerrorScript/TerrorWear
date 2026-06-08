@@ -1,4 +1,6 @@
 package com.terrsus.terrorwear.modules.games.stratagem.viewmodel
 
-class StratagemViewModel {
+import androidx.lifecycle.ViewModel
+
+class StratagemViewModel: ViewModel() {
 }

@@ -48,7 +48,7 @@ import com.terrsus.terrorwear.modules.games.pong.viewmodel.PongViewModel
 @Composable
 fun PongScreen(
     navController: NavHostController,
-    viewModel: PongViewModel = viewModel()
+    viewModel: PongViewModel
 ) {
     val state by viewModel.state.collectAsState()
     val phase by viewModel.phase.collectAsState()

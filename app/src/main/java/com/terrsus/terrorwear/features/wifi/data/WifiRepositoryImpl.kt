@@ -9,41 +9,84 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 
+/**
+ * Concrete implementation of [WifiRepository].
+ *
+ * Wraps [WifiManager] and exposes reactive packet streams.
+ * Converts raw byte arrays into domain-level [WifiPacket] objects.
+ */
 class WifiRepositoryImpl(
     private val manager: WifiManager
 ) : WifiRepository {
 
-    private var udp: WifiUdpClient? = null
-    private var tcp: WifiTcpClient? = null
-    private var server: WifiTcpServer? = null
+    private var udpClient: WifiUdpClient? = null
+    private var tcpClient: WifiTcpClient? = null
+    private var tcpServer: WifiTcpServer? = null
+
+    // ---------------------------------------------------------
+    // Packet Streams
+    // ---------------------------------------------------------
 
     override fun udpPackets(): Flow<WifiPacket> =
-        udp?.packets?.map { WifiPacket(it, "udp", 0) } ?: emptyFlow()
+        udpClient?.packets?.map { rawBytes ->
+            WifiPacket(
+                data = rawBytes,
+                from = "udp",
+                port = udpClient?.listeningPort ?: 0
+            )
+        } ?: emptyFlow()
 
     override fun tcpPackets(): Flow<WifiPacket> =
-        tcp?.packets?.map { WifiPacket(it, "tcp", 0) } ?: emptyFlow()
+        tcpClient?.packets?.map { rawBytes ->
+            WifiPacket(
+                data = rawBytes,
+                from = "tcp",
+                port = tcpClient?.connectedPort ?: 0
+            )
+        } ?: emptyFlow()
+
+    override fun tcpServerPackets(): Flow<WifiPacket> =
+        tcpServer?.packets?.map { rawBytes ->
+            WifiPacket(
+                data = rawBytes,
+                from = "tcp-server",
+                port = tcpServer?.listeningPort ?: 0,
+                timestamp = System.currentTimeMillis()
+            )
+        } ?: emptyFlow()
+
+    // ---------------------------------------------------------
+    // Send Operations
+    // ---------------------------------------------------------
 
     override fun sendUdp(data: ByteArray, host: String, port: Int) {
-        udp?.send(data, host, port)
+        udpClient?.send(data, host, port)
     }
 
     override fun sendTcp(data: ByteArray) {
-        tcp?.send(data)
+        tcpClient?.send(data)
     }
 
+    // ---------------------------------------------------------
+    // Lifecycle Control
+    // ---------------------------------------------------------
+
     override fun startUdp(port: Int) {
-        udp = manager.startUdp(port)
+        udpClient = manager.startUdp(port)
     }
 
     override fun startTcpClient(host: String, port: Int) {
-        tcp = manager.startTcpClient(host, port)
+        tcpClient = manager.startTcpClient(host, port)
     }
 
     override fun startTcpServer(port: Int) {
-        server = manager.startTcpServer(port)
+        tcpServer = manager.startTcpServer(port)
     }
 
     override fun stopAll() {
         manager.stopAll()
+        udpClient = null
+        tcpClient = null
+        tcpServer = null
     }
 }

@@ -149,10 +149,26 @@ sealed class Route(
         fun create(address: String) = "gatt/$address"
     }
 
-    data object Wifi : Route(
-        path = "WiFi",
+    data object WifiInfo : Route(
+        path = "WifiInfo",
         name = "WiFi",
         summary = "UDP/TCP, ping tools",
+        icon = R.drawable.baseline_wifi_24,
+        type = ModuleType.DEBUG,
+        features = setOf(Feature.WIFI)
+    )
+    data object WifiTools : Route(
+        path = "WifiTools",
+        name = "WiFi Tools",
+        summary = null,
+        icon = R.drawable.baseline_wifi_24,
+        type = ModuleType.DEBUG,
+        features = setOf(Feature.WIFI)
+    )
+    data object WifiLogs : Route(
+        path = "WifiLogs",
+        name = "WiFi Logs",
+        summary = null,
         icon = R.drawable.baseline_wifi_24,
         type = ModuleType.DEBUG,
         features = setOf(Feature.WIFI)

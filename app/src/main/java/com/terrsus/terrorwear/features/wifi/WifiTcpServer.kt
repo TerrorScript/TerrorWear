@@ -6,37 +6,63 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import java.net.ServerSocket
 import java.net.Socket
 
+/**
+ * Simple single‑client TCP server for Wi‑Fi.
+ *
+ * Listens on a fixed local port, accepts a single client connection, and
+ * exposes incoming data as a [Flow] of raw [ByteArray] packets.
+ */
 class WifiTcpServer(
     private val port: Int
 ) {
-    private val server = ServerSocket(port)
-    private var client: Socket? = null
+    private val serverSocket = ServerSocket(port)
+    private var clientSocket: Socket? = null
+
+    /** Local TCP port this server is listening on. */
+    val listeningPort: Int
+        get() = port
 
     private val incoming = Channel<ByteArray>(Channel.BUFFERED)
+
+    /** Stream of incoming TCP packets from the connected client. */
     val packets: Flow<ByteArray> = incoming.receiveAsFlow()
 
+    /**
+     * Starts a background thread that accepts a single client and then
+     * continuously reads from it, emitting packets into [packets].
+     */
     fun start() {
         Thread {
-            client = server.accept()
-            val input = client!!.getInputStream()
+            clientSocket = serverSocket.accept()
+            val inputStream = clientSocket!!.getInputStream()
 
-            val buf = ByteArray(2048)
-            while (client!!.isConnected) {
-                val read = input.read(buf)
-                if (read > 0) {
-                    incoming.trySend(buf.copyOf(read))
+            val buffer = ByteArray(2048)
+
+            while (clientSocket!!.isConnected) {
+                val bytesRead = inputStream.read(buffer)
+                if (bytesRead > 0) {
+                    val packetBytes = buffer.copyOf(bytesRead)
+                    incoming.trySend(packetBytes)
+                } else if (bytesRead < 0) {
+                    break // client disconnected
                 }
             }
         }.start()
     }
 
+    /**
+     * Sends the given [data] to the connected TCP client, if any.
+     */
     fun send(data: ByteArray) {
-        client?.getOutputStream()?.write(data)
-        client?.getOutputStream()?.flush()
+        clientSocket?.getOutputStream()?.write(data)
+        clientSocket?.getOutputStream()?.flush()
     }
 
+    /**
+     * Stops the server and closes the client connection if present.
+     */
     fun stop() {
-        client?.close()
-        server.close()
+        clientSocket?.close()
+        serverSocket.close()
     }
 }

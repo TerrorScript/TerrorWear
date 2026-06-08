@@ -28,7 +28,7 @@ import kotlinx.coroutines.isActive
 @Composable
 fun TiltScreen(
     navController: NavHostController,
-    viewModel: TiltViewModel = viewModel()
+    viewModel: TiltViewModel
 ) {
     // SensorManager needs context so it lives here
     val sensorManager = AppContainer.sensorManager

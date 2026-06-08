@@ -23,10 +23,21 @@ import com.terrsus.terrorwear.modules.ble.ui.gatt.GattScreen
 import com.terrsus.terrorwear.modules.tools.programassist.ui.ProgramAssistScreen
 import com.terrsus.terrorwear.modules.games.stratagem.ui.StratagemScreen
 import com.terrsus.terrorwear.features.ble.ui.components.BlePermissionBox
+import com.terrsus.terrorwear.modules.games.pong.viewmodel.PongViewModel
+import com.terrsus.terrorwear.modules.games.stratagem.viewmodel.StratagemViewModel
+import com.terrsus.terrorwear.modules.games.tilt.viewmodel.TiltViewModel
 import com.terrsus.terrorwear.modules.imu.ui.ImuScreen
 import com.terrsus.terrorwear.modules.settings.ui.SettingsScreen
 import com.terrsus.terrorwear.modules.settings.viewmodel.SettingsViewModel
+import com.terrsus.terrorwear.modules.tools.cameraremote.viewmodel.CameraRemoteViewModel
 import com.terrsus.terrorwear.modules.tools.compass.ui.CompassScreen
+import com.terrsus.terrorwear.modules.tools.programassist.viewmodel.ProgramAssistViewModel
+import com.terrsus.terrorwear.modules.wifi.ui.WifiInfoScreen
+import com.terrsus.terrorwear.modules.wifi.ui.WifiLogScreen
+import com.terrsus.terrorwear.modules.wifi.ui.WifiToolsScreen
+import com.terrsus.terrorwear.modules.wifi.viewmodel.WifiConnectionViewModel
+import com.terrsus.terrorwear.modules.wifi.viewmodel.WifiNetworkInfoViewModel
+import com.terrsus.terrorwear.modules.wifi.viewmodel.WifiPacketViewModel
 import com.terrsus.terrorwear.viewmodel.ble.BleViewModel
 import com.terrsus.terrorwear.viewmodel.ble.GattViewModel
 
@@ -92,7 +103,7 @@ fun NavGraph(navController: NavHostController) {
                 Route.Stratagem,
 
                 Route.Ble,
-                Route.Wifi,
+                Route.WifiInfo,
                 Route.Imu,
             )
 
@@ -119,12 +130,14 @@ fun NavGraph(navController: NavHostController) {
         // ------------------------------
         composable(Route.ProgramAssist.path) {
             enter(Route.ProgramAssist)
-            ProgramAssistScreen()
+            val viewModel: ProgramAssistViewModel = viewModel()
+            ProgramAssistScreen(viewModel)
         }
 
         composable(Route.CameraRemote.path) {
             enter(Route.CameraRemote)
-            CameraRemoteScreen()
+            val viewModel: CameraRemoteViewModel = viewModel()
+            CameraRemoteScreen(viewModel)
         }
 
         composable(Route.Compass.path) {
@@ -137,17 +150,20 @@ fun NavGraph(navController: NavHostController) {
         // ------------------------------
         composable(Route.Stratagem.path) {
             enter(Route.Stratagem)
-            StratagemScreen()
+            val viewModel: StratagemViewModel = viewModel()
+            StratagemScreen(viewModel)
         }
 
         composable(Route.Pong.path) {
             enter(Route.Pong)
-            PongScreen(navController)
+            val viewModel: PongViewModel = viewModel()
+            PongScreen(navController, viewModel)
         }
 
         composable(Route.Tilt.path) {
             enter(Route.Tilt)
-            TiltScreen(navController)
+            val viewModel: TiltViewModel = viewModel()
+            TiltScreen(navController, viewModel)
         }
 
         // ------------------------------
@@ -155,9 +171,26 @@ fun NavGraph(navController: NavHostController) {
         // ------------------------------
         composable(Route.Ble.path) {
             enter(Route.Ble)
+            val viewModel: BleViewModel = viewModel()
             BlePermissionBox {
-                BleScreen(navController)
+                BleScreen(navController, viewModel)
             }
+        }
+        composable(Route.WifiInfo.path) {
+            enter(Route.WifiInfo)
+            val viewModel: WifiNetworkInfoViewModel = viewModel()
+            val connectionViewModel: WifiConnectionViewModel = viewModel()
+            WifiInfoScreen(navController, viewModel, connectionViewModel)
+        }
+        composable(Route.WifiTools.path) {
+            enter(Route.WifiTools)
+            val viewModel: WifiConnectionViewModel = viewModel()
+            WifiToolsScreen(navController, viewModel)
+        }
+        composable(Route.WifiLogs.path) {
+            enter(Route.WifiLogs)
+            val viewModel: WifiPacketViewModel = viewModel()
+            WifiLogScreen(navController, viewModel)
         }
 
         composable(

@@ -7,9 +7,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
+import com.terrsus.terrorwear.modules.games.stratagem.viewmodel.StratagemViewModel
 
 @Composable
-fun StratagemScreen() {
+fun StratagemScreen(
+     viewModel: StratagemViewModel
+) {
     TimeText()
 
     Box(

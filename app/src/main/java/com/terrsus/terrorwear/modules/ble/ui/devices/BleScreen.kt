@@ -27,7 +27,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun BleScreen(
     navController: NavHostController,
-    viewModel: BleViewModel = viewModel(),
+    viewModel: BleViewModel
 ) {
     val haptics = LocalHapticFeedback.current
     val view = LocalView.current

@@ -53,7 +53,7 @@ import com.terrsus.terrorwear.ui.components.TelemetryRing
  */
 @Composable
 fun ProgramAssistScreen(
-    viewModel: ProgramAssistViewModel = viewModel()
+    viewModel: ProgramAssistViewModel
 ) {
     val pagerState = rememberPagerState(initialPage = 1, pageCount = { 4 })
 
