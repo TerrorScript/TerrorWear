@@ -16,7 +16,6 @@ import com.terrsus.terrorwear.LocalAppContainer
 import com.terrsus.terrorwear.domain.features.FeatureLifecycleController
 import com.terrsus.terrorwear.ui.screens.dashboard.DashboardScreen
 import com.terrsus.terrorwear.ui.screens.ble.BleScreen
-import com.terrsus.terrorwear.ui.screens.cameraremote.CameraRemoteScreen
 import com.terrsus.terrorwear.modules.games.pong.ui.PongScreen
 import com.terrsus.terrorwear.modules.games.tilt.ui.TiltScreen
 import com.terrsus.terrorwear.modules.ble.ui.gatt.GattScreen
@@ -29,6 +28,7 @@ import com.terrsus.terrorwear.modules.games.tilt.viewmodel.TiltViewModel
 import com.terrsus.terrorwear.modules.imu.ui.ImuScreen
 import com.terrsus.terrorwear.modules.settings.ui.SettingsScreen
 import com.terrsus.terrorwear.modules.settings.viewmodel.SettingsViewModel
+import com.terrsus.terrorwear.modules.tools.cameraremote.ui.CameraRemoteScreen
 import com.terrsus.terrorwear.modules.tools.cameraremote.viewmodel.CameraRemoteViewModel
 import com.terrsus.terrorwear.modules.tools.compass.ui.CompassScreen
 import com.terrsus.terrorwear.modules.tools.programassist.viewmodel.ProgramAssistViewModel
@@ -137,7 +137,7 @@ fun NavGraph(navController: NavHostController) {
         composable(Route.CameraRemote.path) {
             enter(Route.CameraRemote)
             val viewModel: CameraRemoteViewModel = viewModel()
-            CameraRemoteScreen(viewModel)
+            CameraRemoteScreen(navController, viewModel)
         }
 
         composable(Route.Compass.path) {
