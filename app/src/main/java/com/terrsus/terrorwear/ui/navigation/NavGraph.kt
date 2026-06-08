@@ -19,8 +19,10 @@ import com.terrsus.terrorwear.modules.ble.ui.gatt.GattScreen
 import com.terrsus.terrorwear.modules.tools.programassist.ui.ProgramAssistScreen
 import com.terrsus.terrorwear.modules.games.stratagem.ui.StratagemScreen
 import com.terrsus.terrorwear.features.ble.ui.components.BlePermissionBox
+import com.terrsus.terrorwear.modules.imu.ui.ImuScreen
 import com.terrsus.terrorwear.modules.settings.ui.SettingsScreen
 import com.terrsus.terrorwear.modules.settings.viewmodel.SettingsViewModel
+import com.terrsus.terrorwear.modules.tools.compass.ui.CompassScreen
 import com.terrsus.terrorwear.viewmodel.ble.BleViewModel
 import com.terrsus.terrorwear.viewmodel.ble.GattViewModel
 
@@ -38,13 +40,16 @@ fun NavGraph(navController: NavHostController) {
         navController = navController,
         startDestination = Route.Dashboard.path
     ) {
-        // Dashboard
+        // ------------------------------
+        // Dashbboard
+        // ------------------------------
         composable(Route.Dashboard.path) {
             val dashboardButtons = listOf(
                 Route.Settings,
 
                 Route.ProgramAssist,
                 Route.CameraRemote,
+                Route.Compass,
 
                 Route.Pong,
                 Route.Tilt,
@@ -52,6 +57,7 @@ fun NavGraph(navController: NavHostController) {
 
                 Route.Ble,
                 Route.Wifi,
+                Route.Imu,
             )
 
             DashboardScreen(
@@ -60,6 +66,9 @@ fun NavGraph(navController: NavHostController) {
             )
         }
 
+        // ------------------------------
+        // System
+        // ------------------------------
         // Settings
         composable(Route.Settings.path) {
             val localAppContainer = LocalAppContainer.current
@@ -68,6 +77,9 @@ fun NavGraph(navController: NavHostController) {
             SettingsScreen(viewModel)
         }
 
+        // ------------------------------
+        // Tools
+        // ------------------------------
         // Program Assist
         composable(Route.ProgramAssist.path) {
             ProgramAssistScreen()
@@ -78,6 +90,14 @@ fun NavGraph(navController: NavHostController) {
             CameraRemoteScreen()
         }
 
+        // Compass
+        composable(Route.Compass.path) {
+            CompassScreen()
+        }
+
+        // ------------------------------
+        // Games
+        // ------------------------------
         // Stratagem
         composable(Route.Stratagem.path) {
             StratagemScreen()
@@ -93,6 +113,9 @@ fun NavGraph(navController: NavHostController) {
             TiltScreen(navController)
         }
 
+        // ------------------------------
+        // Debugging / Misc
+        // ------------------------------
         // BLE
         composable(Route.Ble.path) {
             BlePermissionBox {
@@ -110,5 +133,9 @@ fun NavGraph(navController: NavHostController) {
             GattScreen(viewModel)
         }
 
+        // BLE
+        composable(Route.Imu.path) {
+            ImuScreen()
+        }
     }
 }

@@ -25,7 +25,8 @@ I built it around my smartwatch (Samsung Galaxy Watch5 pro), because... \
 - [Compose for Wear OS](https://developer.android.com/training/wearables/compose?version=3)
 - Data saving: [Room](https://developer.android.com/training/data-storage/room) and [DataStore](https://developer.android.com/jetpack/androidx/releases/datastore)
 - Custom BLE stack
-- <details><summary>AppContainer-based DI to keep it simple</summary>
+- <details><summary>AppContainer-based DI (to keep it simple)</summary>
+
   - A single DI entry point (AppContainer)
   - Features pull dependencies from that one container
   - Modules don’t construct dependencies themselves

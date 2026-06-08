@@ -32,7 +32,6 @@ sealed class Route(
         ModuleType.SYSTEM
     )
 
-
     // ------------------------------
     // Tools
     // ------------------------------
@@ -48,6 +47,13 @@ sealed class Route(
         "Camera Remote",
         "Take photos remotely",
         R.drawable.baseline_linked_camera_24,
+        ModuleType.TOOL
+    )
+    data object Compass : Route(
+        "compass",
+        "Compass",
+        "Bearing, elevation",
+        R.drawable.outline_computer_24,
         ModuleType.TOOL
     )
 
@@ -103,4 +109,11 @@ sealed class Route(
         ModuleType.DEBUG
     )
 
+    data object Imu : Route(
+        "Imu",
+        "IMU",
+        "Inertial debugging",
+        R.drawable.outline_hand_gesture_24,
+        ModuleType.DEBUG
+    )
 }
