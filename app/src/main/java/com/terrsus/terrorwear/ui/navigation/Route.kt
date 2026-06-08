@@ -70,7 +70,7 @@ sealed class Route(
     )
     data object Tilt : Route(
         "tilt",
-        "Table tilt",
+        "Table Tilt",
         "Tilt → Roll → Dodge!",
         R.drawable.outline_sports_esports_24,
         ModuleType.GAME
