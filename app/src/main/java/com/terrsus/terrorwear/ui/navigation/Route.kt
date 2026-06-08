@@ -53,7 +53,7 @@ sealed class Route(
         "compass",
         "Compass",
         "Bearing, elevation",
-        R.drawable.outline_computer_24,
+        R.drawable.baseline_sensors_24,
         ModuleType.TOOL
     )
 
@@ -113,7 +113,7 @@ sealed class Route(
         "Imu",
         "IMU",
         "Inertial debugging",
-        R.drawable.outline_hand_gesture_24,
+        R.drawable.outline_sensors_krx_24,
         ModuleType.DEBUG
     )
 }
