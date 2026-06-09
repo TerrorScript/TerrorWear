@@ -4,15 +4,22 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.util.Log
 import androidx.compose.runtime.staticCompositionLocalOf
+import com.terrsus.terrorwear.AppContainer.init
 import com.terrsus.terrorwear.features.ble.data.BleRepository
 import com.terrsus.terrorwear.features.ble.data.BleRepositoryImpl
-import com.terrsus.terrorwear.features.ble.domain.usecase.*
-import com.terrsus.terrorwear.features.ble.insecure.*
-import com.terrsus.terrorwear.features.ble.common.model.BleGattClientFake
+import com.terrsus.terrorwear.features.ble.domain.usecase.ObserveBleDevicesUseCase
+import com.terrsus.terrorwear.features.ble.domain.usecase.ObserveBleScanningUseCase
+import com.terrsus.terrorwear.features.ble.domain.usecase.StartBleScanUseCase
+import com.terrsus.terrorwear.features.ble.domain.usecase.StopBleScanUseCase
+import com.terrsus.terrorwear.features.ble.insecure.BleManager
+import com.terrsus.terrorwear.features.ble.insecure.BleProvider
 import com.terrsus.terrorwear.features.ble.insecure.transport.BleGattClient
+import com.terrsus.terrorwear.features.ble.insecure.transport.BleGattClientFake
 import com.terrsus.terrorwear.features.ble.insecure.transport.BleGattClientImpl
 import com.terrsus.terrorwear.features.sensors.SensorManager
-import com.terrsus.terrorwear.features.storage.domain.repository.*
+import com.terrsus.terrorwear.features.storage.domain.repository.HighscoreRepository
+import com.terrsus.terrorwear.features.storage.domain.repository.PairingKeyRepository
+import com.terrsus.terrorwear.features.storage.domain.repository.TrustedDeviceRepository
 import com.terrsus.terrorwear.features.storage.encryption.CryptoEngine
 import com.terrsus.terrorwear.features.storage.encryption.KeyStoreManager
 import com.terrsus.terrorwear.features.storage.filesystem.EncryptedFileStorage
@@ -21,9 +28,9 @@ import com.terrsus.terrorwear.features.storage.room.database.AppDatabase
 import com.terrsus.terrorwear.features.storage.room.repository.HighscoreRepositoryRoomImpl
 import com.terrsus.terrorwear.features.storage.room.repository.PairingKeyRepositoryRoomImpl
 import com.terrsus.terrorwear.features.storage.room.repository.TrustedDeviceRepositoryRoomImpl
-import com.terrsus.terrorwear.features.wifi.manager.WifiManager
 import com.terrsus.terrorwear.features.wifi.data.WifiRepository
 import com.terrsus.terrorwear.features.wifi.data.WifiRepositoryImpl
+import com.terrsus.terrorwear.features.wifi.manager.WifiManager
 import com.terrsus.terrorwear.features.wifi.networkinfoprovider.WifiNetworkInfoProvider
 import com.terrsus.terrorwear.features.wifi.networkinfoprovider.WifiNetworkInfoProviderFake
 import com.terrsus.terrorwear.features.wifi.networkinfoprovider.WifiNetworkInfoProviderImpl
@@ -154,8 +161,7 @@ object AppContainer {
      * where Wi‑Fi APIs are unavailable.
      */
     val wifiNetworkInfoProvider: WifiNetworkInfoProvider by lazy {
-        if (DeviceUtils.isEmulator)
-            WifiNetworkInfoProviderFake()
+        if (DeviceUtils.isEmulator) WifiNetworkInfoProviderFake()
         else {
             val connectivityManager = appContext.getSystemService(ConnectivityManager::class.java)
             WifiNetworkInfoProviderImpl(connectivityManager)

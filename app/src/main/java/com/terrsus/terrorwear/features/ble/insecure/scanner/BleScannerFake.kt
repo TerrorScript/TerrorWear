@@ -9,6 +9,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
+private const val LogTag = "TW/BLE/Scanner"
+
 val fakeList = listOf(
     BleDevice("AA:BB:CC:DD:EE:01", "Arduino Uno", -42),
     BleDevice("AA:BB:CC:DD:EE:02", "Arduino Nano 33 BLE", -55),
@@ -19,7 +21,7 @@ val fakeList = listOf(
 
 class BleScannerFake : BleScanner {
     init {
-        Log.d("TW/BleScanner", "init FakeBleScanner, created instance = ${this.hashCode()}")
+        Log.d(LogTag, "init FakeBleScanner, created instance = ${this.hashCode()}")
     }
 
     override val isScanning = MutableStateFlow(false)
@@ -28,6 +30,8 @@ class BleScannerFake : BleScanner {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     override fun startScan() {
+        Log.d(LogTag, "scan starting")
+
         isScanning.value = true
 
         // Emit extra devices over time
@@ -40,21 +44,26 @@ class BleScannerFake : BleScanner {
             }
         }
 
-        Log.d("TW/BLE", "FakeBleScanner scan started")
+        Log.d(LogTag, "scan started")
     }
 
     override fun stopScan() {
+        Log.d(LogTag, "scan stopping")
+
         isScanning.value = false
-        Log.d("TW/BLE", "FakeBleScanner scan stopped")
+
+        Log.d(LogTag, "scan stopped")
     }
 
     private fun addDevice(address: String, name: String, rssi: Int) {
+        Log.d(LogTag, "device adding address=$address name=$name rssi=$rssi")
+
         val updated = scanResults.value.toMutableList()
         val device = BleDevice(address, name, rssi)
 
-        Log.d("TW/BLE", "FakeBleScanner adding device: $device")
-
         updated.add(device)
         scanResults.value = updated
+
+        Log.d(LogTag, "device added address=$address name=$name rssi=$rssi")
     }
 }

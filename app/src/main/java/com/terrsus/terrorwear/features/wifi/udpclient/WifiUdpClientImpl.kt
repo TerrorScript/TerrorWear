@@ -8,6 +8,8 @@ import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
 
+private const val LogTag = "TW/Wifi/UdpClient"
+
 /**
  * Simple UDP listener/sender for Wi‑Fi traffic.
  *
@@ -32,9 +34,13 @@ class WifiUdpClientImpl(
      * Sends a UDP datagram to the given [host] and [port] with the provided [data].
      */
     override fun send(data: ByteArray, host: String, port: Int) {
+        Log.d(LogTag, "sending $host:$port")
+
         val address = InetAddress.getByName(host)
         val packet = DatagramPacket(data, data.size, address, port)
         socket.send(packet)
+
+        Log.d(LogTag, "sent $host:$port")
     }
 
     /**
@@ -42,7 +48,7 @@ class WifiUdpClientImpl(
      * and forwards them into [packets].
      */
     override fun start() {
-        Log.d("TW/WifiUdpClient", "starting")
+        Log.d(LogTag, "starting")
 
         Thread {
             val buffer = ByteArray(2048)
@@ -56,17 +62,17 @@ class WifiUdpClientImpl(
             }
         }.start()
 
-        Log.d("TW/WifiUdpClient", "started")
+        Log.d(LogTag, "started")
     }
 
     /**
      * Stops the UDP listener and closes the underlying socket.
      */
     override fun stop() {
-        Log.d("TW/WifiUdpClient", "stopping")
+        Log.d(LogTag, "stopping")
 
         socket.close()
 
-        Log.d("TW/WifiUdpClient", "stopped")
+        Log.d(LogTag, "stopped")
     }
 }

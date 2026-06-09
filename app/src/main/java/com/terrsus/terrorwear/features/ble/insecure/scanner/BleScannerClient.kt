@@ -4,12 +4,14 @@ import android.content.Context
 import android.util.Log
 import com.terrsus.terrorwear.util.DeviceUtils
 
+private const val LogTag = "TW/BLE/ScannerClient"
+
 class BleScannerClient(
     context: Context
 ) {
     init {
-        Log.d("TW/BleScannerClient", "init")
-        Log.d("TW/BleScannerClient", "isEmulator = ${DeviceUtils.isEmulator}")
+        Log.d(LogTag, "init")
+        Log.d(LogTag, "isEmulator = ${DeviceUtils.isEmulator}")
     }
     private val scanner: BleScanner =
         if (DeviceUtils.isEmulator) BleScannerFake()

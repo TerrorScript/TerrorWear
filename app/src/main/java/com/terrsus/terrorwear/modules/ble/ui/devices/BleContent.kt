@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material.Chip
@@ -27,6 +29,8 @@ fun BleContent(
     onToggleScan: () -> Unit,
     onSelectDevice: (BleDevice) -> Unit
 ) {
+    val haptics = LocalHapticFeedback.current
+
     val scrollState = rememberScalingLazyListState()
 
     Scaffold(
@@ -55,7 +59,10 @@ fun BleContent(
             item {
                 Chip(
                     label = { Text(if (scanning) "Stop Scan" else "Start Scan") },
-                    onClick = onToggleScan
+                    onClick = {
+                        haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                        onToggleScan()
+                    }
                 )
             }
 

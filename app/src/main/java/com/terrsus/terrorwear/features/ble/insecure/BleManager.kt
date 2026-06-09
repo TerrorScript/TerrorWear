@@ -15,12 +15,14 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.sample
 
+private const val LogTag = "TW/BLE/Manager"
+
 @SuppressLint("MissingPermission")
 class BleManager(
     private val client: BleScannerClient
 ) {
     init {
-        Log.d("TW/BleManager", "init")
+        Log.d(LogTag, "init")
     }
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -32,7 +34,7 @@ class BleManager(
 
     @OptIn(FlowPreview::class)
     fun start() {
-        Log.d("TW/BleManager", "Start scan")
+        Log.d(LogTag, "Start scan")
 
         client.scanResults
             .sample(250)

@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+private const val LogTag = "TW/Wifi/ConnectionViewModel"
+
 class WifiConnectionViewModel : ViewModel() {
 
     private val repo = AppContainer.wifiRepository
@@ -29,7 +31,7 @@ class WifiConnectionViewModel : ViewModel() {
     val eventLog: StateFlow<List<String>> = _eventLog
 
     private fun log(message: String) {
-        Log.d("TW/WifiConnectionViewModel", message)
+        Log.d(LogTag, message)
         _eventLog.value = _eventLog.value + message
         _status.value = message
     }
@@ -43,24 +45,24 @@ class WifiConnectionViewModel : ViewModel() {
     }
 
     fun restartUdp(port: Int) {
-        log("UDP listener starting on :$port")
+        log("UDP listener starting :$port")
         repo.startUdp(port)
-        log("UDP listener started on :$port")
+        log("UDP listener started :$port")
     }
 
     // ---------------------------------------------------------
     // TCP Client Actions
     // ---------------------------------------------------------
     fun sendTcp(text: String) {
-        log("Sending TCP packet")
+        log("TCP sending packet")
         repo.sendTcp(text.encodeToByteArray())
-        log("Sent TCP packet")
+        log("TCP sent packet")
     }
 
     fun restartTcp(host: String, port: Int) {
-        log("TCP client connecting → $host:$port")
+        log("TCP client connecting $host:$port")
         repo.startTcpClient(host, port)
-        log("TCP client connected → $host:$port")
+        log("TCP client connected $host:$port")
     }
 
     // ---------------------------------------------------------

@@ -1,5 +1,7 @@
 package com.terrsus.terrorwear.features.ble.insecure.transport
 
+import android.content.Context
+import android.util.Log
 import com.terrsus.terrorwear.features.ble.common.model.BleGattCharacteristic
 import com.terrsus.terrorwear.features.ble.common.model.BleGattCharacteristicValue
 import com.terrsus.terrorwear.features.ble.common.model.BleGattConnectionState
@@ -14,6 +16,8 @@ import kotlinx.coroutines.Dispatchers
 import java.util.UUID
 import kotlin.random.Random
 
+private const val LogTag = "TW/BLE/GattClient"
+
 /**
  * Fake in-memory implementation of [BleGattClient] used on emulators.
  *
@@ -25,7 +29,9 @@ import kotlin.random.Random
  *
  * No Android Bluetooth APIs are used.
  */
-class BleGattClientFake : BleGattClient {
+class BleGattClientFake(
+    private val context: Context
+) : BleGattClient {
 
     private val scope = CoroutineScope(Dispatchers.Default)
 
@@ -62,6 +68,8 @@ class BleGattClientFake : BleGattClient {
     // -------------------------------------------------------------------------
 
     override fun connect(address: String) {
+        Log.d(LogTag, "connecting address=$address")
+
         val stateFlow = connectionStateFlows.getOrPut(address) {
             MutableStateFlow(BleGattConnectionState.Disconnected)
         }
@@ -77,10 +85,16 @@ class BleGattClientFake : BleGattClient {
                 MutableStateFlow(emptyList())
             }.value = fakeServices
         }
+
+        Log.d(LogTag, "connected address=$address")
     }
 
     override fun disconnect(address: String) {
+        Log.d(LogTag, "disconnecting address=$address")
+
         connectionStateFlows[address]?.value = BleGattConnectionState.Disconnected
+
+        Log.d(LogTag, "disconnected address=$address")
     }
 
     override fun connectionState(address: String): Flow<BleGattConnectionState> =
@@ -113,6 +127,8 @@ class BleGattClientFake : BleGattClient {
         }
 
     override fun enableNotifications(address: String, service: UUID, characteristic: UUID) {
+        Log.d(LogTag, "notification enabling address=$address service=$service characteristic=$characteristic")
+
         // Simulate periodic notifications
         val flow = notificationsFlows.getOrPut(address) {
             MutableStateFlow(
@@ -137,6 +153,8 @@ class BleGattClientFake : BleGattClient {
                 }
             }
         }
+
+        Log.d(LogTag, "notification enabled address=$address service=$service characteristic=$characteristic")
     }
 
     // -------------------------------------------------------------------------
@@ -148,6 +166,7 @@ class BleGattClientFake : BleGattClient {
         service: UUID,
         characteristic: UUID
     ): Flow<BleGattCharacteristicValue> {
+        Log.d(LogTag, "reading address=$address service=$service characteristic=$characteristic")
 
         val flow = notificationsFlows.getOrPut(address) {
             MutableStateFlow(
@@ -171,6 +190,7 @@ class BleGattClientFake : BleGattClient {
             }
         }
 
+        Log.d(LogTag, "read address=$address service=$service characteristic=$characteristic")
         return flow
     }
 
@@ -180,6 +200,8 @@ class BleGattClientFake : BleGattClient {
         characteristic: UUID,
         data: ByteArray
     ) {
+        Log.d(LogTag, "writing address=$address service=$service characteristic=$characteristic")
+
         // Writes simply echo back as a notification
         val flow = notificationsFlows.getOrPut(address) {
             MutableStateFlow(
@@ -201,5 +223,7 @@ class BleGattClientFake : BleGattClient {
                 )
             }
         }
+
+        Log.d(LogTag, "written address=$address service=$service characteristic=$characteristic")
     }
 }

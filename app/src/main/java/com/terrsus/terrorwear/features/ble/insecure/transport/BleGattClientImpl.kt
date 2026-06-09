@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
+private const val LogTag = "TW/BLE/GattClient"
+
 class BleGattClientImpl(
     private val context: Context
 ) : BleGattClient {
@@ -36,6 +38,8 @@ class BleGattClientImpl(
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     override fun connect(address: String) {
+        Log.d(LogTag, "connecting address: $address")
+
         val device = bluetoothAdapter.getRemoteDevice(address)
 
         val stateFlow = connectionStateFlows.getOrPut(address) {
@@ -46,19 +50,18 @@ class BleGattClientImpl(
 
         device.connectGatt(context, false, object : BluetoothGattCallback() {
 
-            @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
             override fun onConnectionStateChange(
                 gatt: BluetoothGatt,
                 status: Int,
                 newState: Int
             ) {
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
-                    Log.d("TW/Gatt", "Connected to $address")
+                    Log.d("TW/BLE/Gatt", "Connected to $address")
                     gattMap[address] = gatt
                     stateFlow.value = BleGattConnectionState.Connected
                     gatt.discoverServices()
                 } else {
-                    Log.d("TW/Gatt", "Disconnected from $address")
+                    Log.d("TW/BLE/Gatt", "Disconnected from $address")
                     stateFlow.value = BleGattConnectionState.Disconnected
                     gattMap.remove(address)
                 }
@@ -87,6 +90,7 @@ class BleGattClientImpl(
                 }.value = services
             }
 
+            @Deprecated("Deprecated in Java")
             override fun onCharacteristicChanged(
                 gatt: BluetoothGatt,
                 characteristic: BluetoothGattCharacteristic
@@ -106,6 +110,7 @@ class BleGattClientImpl(
                 )
             }
 
+            @Deprecated("Deprecated in Java")
             override fun onCharacteristicRead(
                 gatt: BluetoothGatt,
                 characteristic: BluetoothGattCharacteristic,
@@ -126,13 +131,19 @@ class BleGattClientImpl(
                 )
             }
         })
+
+        Log.d(LogTag, "connected")
     }
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     override fun disconnect(address: String) {
+        Log.d(LogTag, "disconnecting address: $address")
+
         gattMap[address]?.close()
         gattMap.remove(address)
         connectionStateFlows[address]?.value = BleGattConnectionState.Disconnected
+
+        Log.d(LogTag, "disconnected")
     }
 
     override fun connectionState(address: String): Flow<BleGattConnectionState> =
@@ -157,7 +168,13 @@ class BleGattClientImpl(
         }
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
-    override fun read(address: String, service: UUID, characteristic: UUID): Flow<BleGattCharacteristicValue> {
+    override fun read(
+        address: String,
+        service: UUID,
+        characteristic: UUID
+    ): Flow<BleGattCharacteristicValue> {
+        Log.d(LogTag, "reading address=$address service=$service characteristic=$characteristic")
+
         val gatt = gattMap[address] ?: return notifications(address)
 
         val ch = gatt.getService(service)?.getCharacteristic(characteristic)
@@ -169,11 +186,14 @@ class BleGattClientImpl(
             gatt.readCharacteristic(ch)
         }
 
+        Log.d(LogTag, "read address=$address service=$service characteristic=$characteristic")
         return notifications(address)
     }
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     override fun write(address: String, service: UUID, characteristic: UUID, data: ByteArray) {
+        Log.d(LogTag, "writing address=$address service=$service characteristic=$characteristic")
+
         val gatt = gattMap[address] ?: return
         val ch = gatt.getService(service)?.getCharacteristic(characteristic) ?: return
 
@@ -183,10 +203,14 @@ class BleGattClientImpl(
             ch.value = data
             gatt.writeCharacteristic(ch)
         }
+
+        Log.d(LogTag, "written address=$address service=$service characteristic=$characteristic")
     }
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     override fun enableNotifications(address: String, service: UUID, characteristic: UUID) {
+        Log.d(LogTag, "notification enabling address=$address service=$service characteristic $characteristic")
+
         val gatt = gattMap[address] ?: return
 
         val ch = gatt.getService(service)?.getCharacteristic(characteristic) ?: return
@@ -202,6 +226,8 @@ class BleGattClientImpl(
             descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
             gatt.writeDescriptor(descriptor)
         }
+
+        Log.d(LogTag, "notification enabled address=$address service=$service characteristic $characteristic")
     }
 
     companion object {

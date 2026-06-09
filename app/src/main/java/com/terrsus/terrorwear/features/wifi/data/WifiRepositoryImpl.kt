@@ -1,5 +1,6 @@
 package com.terrsus.terrorwear.features.wifi.data
 
+import android.util.Log
 import com.terrsus.terrorwear.domain.wifi.model.WifiPacket
 import com.terrsus.terrorwear.features.wifi.manager.WifiManager
 import com.terrsus.terrorwear.features.wifi.tcpclient.WifiTcpClient
@@ -8,6 +9,8 @@ import com.terrsus.terrorwear.features.wifi.udpclient.WifiUdpClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
+
+private const val LogTag = "TW/Wifi/WifiRepository"
 
 /**
  * Concrete implementation of [WifiRepository].
@@ -60,11 +63,19 @@ class WifiRepositoryImpl(
     // ---------------------------------------------------------
 
     override fun sendUdp(data: ByteArray, host: String, port: Int) {
+        Log.d(LogTag, "UDP sending $host:$port")
+
         udpClient?.send(data, host, port)
+
+        Log.d(LogTag, "UDP sent $host:$port")
     }
 
     override fun sendTcp(data: ByteArray) {
+        Log.d(LogTag, "TCP sending")
+
         tcpClient?.send(data)
+
+        Log.d(LogTag, "TCP sent")
     }
 
     // ---------------------------------------------------------
@@ -72,21 +83,37 @@ class WifiRepositoryImpl(
     // ---------------------------------------------------------
 
     override fun startUdp(port: Int) {
+        Log.d(LogTag, "UDP starting :$port")
+
         udpClient = wifiManager.startUdp(port)
+
+        Log.d(LogTag, "UDP started :$port")
     }
 
     override fun startTcpClient(host: String, port: Int) {
+        Log.d(LogTag, "TCP starting host=$String :$port")
+
         tcpClient = wifiManager.startTcpClient(host, port)
+
+        Log.d(LogTag, "TCP started host=$String :$port")
     }
 
     override fun startTcpServer(port: Int) {
+        Log.d(LogTag, "UDP server starting :$port")
+
         tcpServer = wifiManager.startTcpServer(port)
+
+        Log.d(LogTag, "UDP server started :$port")
     }
 
     override fun stopAll() {
+        Log.d(LogTag, "stopping all")
+
         wifiManager.stopAll()
         udpClient = null
         tcpClient = null
         tcpServer = null
+
+        Log.d(LogTag, "stopped all")
     }
 }

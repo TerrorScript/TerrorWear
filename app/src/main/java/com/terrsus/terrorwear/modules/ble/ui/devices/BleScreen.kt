@@ -24,6 +24,8 @@ import com.terrsus.terrorwear.ui.components.BottomStatusPopup
 import com.terrsus.terrorwear.viewmodel.ble.BleViewModel
 import kotlinx.coroutines.delay
 
+private const val LogTag = "TW/BLE"
+
 @Composable
 fun BleScreen(
     navController: NavHostController,
@@ -61,17 +63,16 @@ fun BleScreen(
             searchQuery = searchQuery,
             onSearchChange = { viewModel.updateSearchQuery(it) },
             onToggleScan = {
-                Log.i("TW/BLE", "Toggle Scan")
+                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                 if (scanning) {
-                    Log.d("TW/BLE", "Stop Scan")
+                    Log.d(LogTag, "Stop Scan")
                     viewModel.endScan()
                     viewModel.showStatus("Scan stopped")
                 } else {
-                    Log.d("TW/BLE", "Start Scan")
+                    Log.d(LogTag, "Start Scan")
                     viewModel.beginScan()
                     viewModel.showStatus("Scan started")
                 }
-                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
             },
             onSelectDevice = { device ->
                 if (device == viewModel.selectedDevice) {

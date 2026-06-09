@@ -1,5 +1,6 @@
 package com.terrsus.terrorwear.features.ble.secure.manager
 
+import android.util.Log
 import com.terrsus.terrorwear.features.ble.common.model.BleGattConnectionState
 import com.terrsus.terrorwear.features.ble.common.model.BleGattService
 import com.terrsus.terrorwear.features.ble.secure.session.SecureBleConnectionState
@@ -11,6 +12,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+
+private const val LogTag = "TW/BLE/SecureBleManager"
 
 /**
  * Implementation of SecureBleManager with storage integration.
@@ -35,6 +38,8 @@ class SecureBleManagerImpl(
         mutableMapOf<String, MutableStateFlow<List<BleGattService>>>()
 
     override fun connect(address: String) {
+        Log.d(LogTag, "connecting address=$address")
+
         val stateFlow = connectionStates.getOrPut(address) {
             MutableStateFlow(SecureBleConnectionState.Disconnected)
         }
@@ -87,12 +92,18 @@ class SecureBleManagerImpl(
                     }.value = services
                 }
                 .launchIn(this)
+
+            Log.d(LogTag, "connected address=$address")
         }
     }
 
     override fun disconnect(address: String) {
+        Log.d(LogTag, "disconnecting address=$address")
+
         secureClient.disconnect(address)
         connectionStates[address]?.value = SecureBleConnectionState.Disconnected
+
+        Log.d(LogTag, "disconnected address=$address")
     }
 
     override fun connectionState(address: String): Flow<SecureBleConnectionState> =

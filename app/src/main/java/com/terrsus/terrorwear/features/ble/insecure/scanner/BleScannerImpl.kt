@@ -44,7 +44,7 @@ class BleScannerImpl(context: Context) : BleScanner {
     }
 
     init {
-        Log.d("TW/BleScanner", "init BleScannerImpl, created instance = ${this.hashCode()}")
+        Log.d("TW/BLE/Scanner", "init BleScannerImpl, created instance = ${this.hashCode()}")
 
         // Background processor — safe to block here
         scope.launch {

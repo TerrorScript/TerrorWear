@@ -118,21 +118,14 @@ Screenshots
 Controls the paired phone’s camera.
 Supports shutter, preview toggles, and basic remote actions over BLE/Wi‑Fi.
 
-[//]: # (<details>)
-
-[//]: # (<summary>)
-
-[//]: # (Screenshots)
-
-[//]: # (</summary>)
-
-[//]: # (<p>)
-
-[//]: # (  <img src="screenshots/" alt=""/>)
-
-[//]: # (</p>)
-
-[//]: # (</details>)
+<details>
+<summary>
+Screenshots
+</summary>
+<p>
+  <img src="screenshots/cameraremote/cameraremote.png" alt=""/>
+</p>
+</details>
 
 ### Compass
 Simple directional tool that uses the magnetometer and IMU fusion.

@@ -28,9 +28,10 @@ fun ServiceCard(
             .fillMaxWidth()
             .wrapContentHeight()
     ) {
-        Column(Modifier.padding(8.dp)) {
+        Column(Modifier.padding(4.dp)) {
             Text("Service: ${service.uuid}", fontWeight = FontWeight.Bold)
-            Spacer(Modifier.height(4.dp))
+
+            Spacer(Modifier.height(6.dp))
 
             service.characteristics.forEach { ch ->
                 CharacteristicRow(
@@ -39,7 +40,7 @@ fun ServiceCard(
                     onWrite = { onWrite(ch) },
                     onNotify = { onNotify(ch) }
                 )
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(2.dp))
             }
         }
     }

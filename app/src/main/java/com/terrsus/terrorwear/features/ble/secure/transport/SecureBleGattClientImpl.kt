@@ -1,5 +1,6 @@
 package com.terrsus.terrorwear.features.ble.secure.transport
 
+import android.util.Log
 import com.terrsus.terrorwear.features.ble.common.model.BleGattConnectionState
 import com.terrsus.terrorwear.features.ble.common.model.BleGattCharacteristicValue
 import com.terrsus.terrorwear.features.ble.common.model.BleGattService
@@ -13,6 +14,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.UUID
+
+private const val LogTag = "TW/BLE/SecureBleGattClient"
 
 /**
  * Secure wrapper around the insecure BleGattClient.
@@ -46,12 +49,18 @@ class SecureBleGattClientImpl(
         mutableMapOf<String, MutableStateFlow<List<BleGattService>>>()
 
     override fun connectSecure(address: String) {
+        Log.d(LogTag, "Secure connecting $address")
+
         val stateFlow = secureConnectionState.getOrPut(address) {
             MutableStateFlow(BleGattConnectionState.Disconnected)
         }
 
+        Log.d(LogTag, "connecting step 1")
+
         // Step 1: Connect insecurely
         insecure.connect(address)
+
+        Log.d(LogTag, "connecting step 2")
 
         // Step 2: Observe insecure connection state
         insecure.connectionState(address)
@@ -69,12 +78,16 @@ class SecureBleGattClientImpl(
                 }
             }
             .launchIn(scope)
+
+        Log.d(LogTag, "Secure connected")
     }
 
     override fun currentSession(address: String): BleSession? =
         sessions[address]
 
     private fun performHandshake(address: String) {
+        Log.d(LogTag, "Handshake performing address=$address")
+
         scope.launch {
             try {
                 val session = handshake.performHandshake(address, insecure, crypto)
@@ -114,16 +127,23 @@ class SecureBleGattClientImpl(
                     }
                     .launchIn(scope)
 
+                Log.d(LogTag, "Handshake performed address=$address")
+
             } catch (e: Exception) {
                 secureConnectionState[address]?.value = BleGattConnectionState.Disconnected
+                Log.d(LogTag, "Handshake failed address=$address e=$e")
             }
         }
     }
 
     override fun disconnect(address: String) {
+        Log.d(LogTag, "disconnecting address=$address")
+        
         insecure.disconnect(address)
         sessions.remove(address)
         secureConnectionState[address]?.value = BleGattConnectionState.Disconnected
+
+        Log.d(LogTag, "disconnected address=$address")
     }
 
     override fun connectionState(address: String): Flow<BleGattConnectionState> =

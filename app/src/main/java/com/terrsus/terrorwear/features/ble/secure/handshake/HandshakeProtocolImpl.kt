@@ -1,11 +1,14 @@
 package com.terrsus.terrorwear.features.ble.secure.handshake
 
+import android.util.Log
 import com.terrsus.terrorwear.features.ble.insecure.transport.BleGattClient
 import com.terrsus.terrorwear.features.ble.secure.crypto.BleCrypto
 import com.terrsus.terrorwear.features.ble.secure.session.BleSession
 import com.terrsus.terrorwear.features.ble.secure.session.BleSessionImpl
 import kotlinx.coroutines.flow.first
 import java.util.UUID
+
+private const val LogTag = "TW/BLE/HandshakeProtocol"
 
 /**
  * Concrete handshake implementation.
@@ -33,6 +36,7 @@ class HandshakeProtocolImpl(
         insecure: BleGattClient,
         crypto: BleCrypto
     ): BleSession {
+        Log.d(LogTag, "performHandshake step 1")
 
         // Step 1 — Read device public key
         val devicePubKey = insecure
@@ -40,10 +44,14 @@ class HandshakeProtocolImpl(
             .first()
             .value
 
+        Log.d(LogTag, "performHandshake step 2")
+
         // Step 2 — Generate our own keypair
         val watchKeyPair = crypto.generateKeyPair()
         val watchPublicKeyBytes = watchKeyPair.public.encoded
         val watchPrivateKeyBytes = watchKeyPair.private.encoded
+
+        Log.d(LogTag, "performHandshake step 3")
 
         // Step 3 — Send our public key to the device
         insecure.write(
@@ -53,14 +61,20 @@ class HandshakeProtocolImpl(
             watchPublicKeyBytes
         )
 
+        Log.d(LogTag, "performHandshake step 4")
+
         // Step 4 — Derive shared secret
         val sharedSecret = crypto.deriveSharedSecret(
             privateKey = watchPrivateKeyBytes,
             peerPublicKey = devicePubKey
         )
 
+        Log.d(LogTag, "performHandshake step 5")
+
         // Step 5 — Derive session key
         val sessionKey = crypto.deriveSessionKey(sharedSecret)
+
+        Log.d(LogTag, "performHandshake step 6")
 
         // Step 6 — Notify device handshake is complete
         insecure.write(
@@ -69,6 +83,8 @@ class HandshakeProtocolImpl(
             SESSION_KEY_EXCHANGE,
             crypto.handshakeCompleteSignal()
         )
+
+        Log.d(LogTag, "performHandshake step 7")
 
         // Step 7 — Return session object
         return BleSessionImpl(
