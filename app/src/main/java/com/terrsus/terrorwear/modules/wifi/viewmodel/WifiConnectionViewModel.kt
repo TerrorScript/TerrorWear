@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.terrsus.terrorwear.AppContainer
-import com.terrsus.terrorwear.domain.wifi.model.WifiConnectionState
+import com.terrsus.terrorwear.features.wifi.domain.model.WifiConnectionState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -18,7 +18,7 @@ class WifiConnectionViewModel : ViewModel() {
     // ---------------------------------------------------------
     // Connection State
     // ---------------------------------------------------------
-    private val _wifiState = MutableStateFlow(WifiConnectionState.Disconnected)
+    private val _wifiState = MutableStateFlow(WifiConnectionState.Closed)
     val wifiState: StateFlow<WifiConnectionState> = _wifiState
 
     // ---------------------------------------------------------

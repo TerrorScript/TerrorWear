@@ -148,8 +148,8 @@ object AppContainer {
     val stopBleScanUseCase by lazy { StopBleScanUseCase(bleRepository) }
 
     // -------------------------------------------------------------------------
-// Wi‑Fi
-// -------------------------------------------------------------------------
+    // Wi‑Fi
+    // -------------------------------------------------------------------------
 
     /** Wi‑Fi manager providing UDP, TCP client, and TCP server functionality. */
     val wifiManager: WifiManager by lazy { WifiManager() }

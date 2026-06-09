@@ -63,19 +63,15 @@ class WifiRepositoryImpl(
     // ---------------------------------------------------------
 
     override fun sendUdp(data: ByteArray, host: String, port: Int) {
-        Log.d(LogTag, "UDP sending $host:$port")
+        Log.d(LogTag, "UDP send $host:$port")
 
         udpClient?.send(data, host, port)
-
-        Log.d(LogTag, "UDP sent $host:$port")
     }
 
     override fun sendTcp(data: ByteArray) {
-        Log.d(LogTag, "TCP sending")
+        Log.d(LogTag, "TCP send port=${tcpClient?.connectedPort}")
 
         tcpClient?.send(data)
-
-        Log.d(LogTag, "TCP sent")
     }
 
     // ---------------------------------------------------------
@@ -86,24 +82,18 @@ class WifiRepositoryImpl(
         Log.d(LogTag, "UDP starting :$port")
 
         udpClient = wifiManager.startUdp(port)
-
-        Log.d(LogTag, "UDP started :$port")
     }
 
     override fun startTcpClient(host: String, port: Int) {
-        Log.d(LogTag, "TCP starting host=$String :$port")
+        Log.d(LogTag, "TCP starting $host:$port")
 
         tcpClient = wifiManager.startTcpClient(host, port)
-
-        Log.d(LogTag, "TCP started host=$String :$port")
     }
 
     override fun startTcpServer(port: Int) {
-        Log.d(LogTag, "UDP server starting :$port")
+        Log.d(LogTag, "TCP server starting :$port")
 
         tcpServer = wifiManager.startTcpServer(port)
-
-        Log.d(LogTag, "UDP server started :$port")
     }
 
     override fun stopAll() {

@@ -1,10 +1,13 @@
 package com.terrsus.terrorwear.features.wifi.tcpserver
 
+import android.util.Log
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import java.net.ServerSocket
 import java.net.Socket
+
+private const val LogTag = "TW/Wifi/TcpServer"
 
 /**
  * Simple single‑client TCP server for Wi‑Fi.
@@ -33,19 +36,30 @@ class WifiTcpServerImpl(
      */
     override fun start() {
         Thread {
-            clientSocket = serverSocket.accept()
-            val inputStream = clientSocket!!.getInputStream()
+            Log.d(LogTag, "starting port=$port")
 
-            val buffer = ByteArray(2048)
+            try {
+                clientSocket = serverSocket.accept()
+                Log.d(LogTag, "starting client connected")
+            } catch (e: Exception) {
+                Log.d(LogTag, "starting accept error e=$e")
+            }
 
-            while (clientSocket!!.isConnected) {
-                val bytesRead = inputStream.read(buffer)
-                if (bytesRead > 0) {
-                    val packetBytes = buffer.copyOf(bytesRead)
-                    incoming.trySend(packetBytes)
-                } else if (bytesRead < 0) {
-                    break // client disconnected
+            try {
+                val inputStream = clientSocket!!.getInputStream()
+                val buffer = ByteArray(2048)
+
+                while (clientSocket!!.isConnected) {
+                    val bytesRead = inputStream.read(buffer)
+                    if (bytesRead > 0) {
+                        val packetBytes = buffer.copyOf(bytesRead)
+                        incoming.trySend(packetBytes)
+                    } else if (bytesRead < 0) {
+                        break // client disconnected
+                    }
                 }
+            } catch (e: Exception) {
+                Log.d(LogTag, "read error e=$e")
             }
         }.start()
     }
@@ -54,15 +68,27 @@ class WifiTcpServerImpl(
      * Sends the given [data] to the connected TCP client, if any.
      */
     override fun send(data: ByteArray) {
-        clientSocket?.getOutputStream()?.write(data)
-        clientSocket?.getOutputStream()?.flush()
+        try {
+            clientSocket?.getOutputStream()?.write(data)
+            clientSocket?.getOutputStream()?.flush()
+        } catch (e: Exception) {
+            Log.d(LogTag, "send error e=$e")
+        }
     }
 
     /**
      * Stops the server and closes the client connection if present.
      */
     override fun stop() {
-        clientSocket?.close()
-        serverSocket.close()
+        Log.d(LogTag, "stopping")
+
+        try {
+            clientSocket?.close()
+            serverSocket.close()
+
+            Log.d(LogTag, "stopped")
+        } catch (e: Exception) {
+            Log.d(LogTag, "stop error e=$e")
+        }
     }
 }

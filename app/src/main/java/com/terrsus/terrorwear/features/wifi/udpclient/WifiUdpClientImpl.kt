@@ -36,11 +36,15 @@ class WifiUdpClientImpl(
     override fun send(data: ByteArray, host: String, port: Int) {
         Log.d(LogTag, "sending $host:$port")
 
-        val address = InetAddress.getByName(host)
-        val packet = DatagramPacket(data, data.size, address, port)
-        socket.send(packet)
+        try {
+            val address = InetAddress.getByName(host)
+            val packet = DatagramPacket(data, data.size, address, port)
+            socket.send(packet)
 
-        Log.d(LogTag, "sent $host:$port")
+            Log.d(LogTag, "sent $host:$port")
+        } catch (e: Exception) {
+            Log.d(LogTag, "sending error $host:$port e=$e")
+        }
     }
 
     /**
@@ -53,12 +57,17 @@ class WifiUdpClientImpl(
         Thread {
             val buffer = ByteArray(2048)
 
-            while (!socket.isClosed) {
-                val packet = DatagramPacket(buffer, buffer.size)
-                socket.receive(packet)
+            try {
+                while (!socket.isClosed) {
+                    val packet = DatagramPacket(buffer, buffer.size)
+                    socket.receive(packet)
 
-                val receivedBytes = packet.data.copyOf(packet.length)
-                incoming.trySend(receivedBytes)
+                    val receivedBytes = packet.data.copyOf(packet.length)
+                    incoming.trySend(receivedBytes)
+                }
+            }
+            catch (e: Exception) {
+                Log.d(LogTag, "receive error e=$e")
             }
         }.start()
 
@@ -71,7 +80,11 @@ class WifiUdpClientImpl(
     override fun stop() {
         Log.d(LogTag, "stopping")
 
-        socket.close()
+        try {
+            socket.close()
+        } catch (e: Exception) {
+            Log.d(LogTag, "stopping error e=$e")
+        }
 
         Log.d(LogTag, "stopped")
     }

@@ -1,5 +1,6 @@
 package com.terrsus.terrorwear.features.wifi.tcpclient
 
+import com.terrsus.terrorwear.features.wifi.domain.model.WifiEvent
 import kotlinx.coroutines.flow.Flow
 
 /**
