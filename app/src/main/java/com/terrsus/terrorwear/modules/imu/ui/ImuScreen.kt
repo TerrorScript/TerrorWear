@@ -1,8 +1,12 @@
 package com.terrsus.terrorwear.modules.imu.ui
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,12 +18,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.painter.BrushPainter
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.wear.compose.foundation.AnchorType
 import androidx.wear.compose.foundation.CurvedLayout
 import androidx.wear.compose.foundation.CurvedModifier
@@ -28,10 +40,13 @@ import androidx.wear.compose.foundation.curvedComposable
 import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.size
+import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import com.terrsus.terrorwear.AppContainer
+import com.terrsus.terrorwear.ui.components.ValueGraph
+
 
 /**
  * IMU debug screen.
@@ -49,12 +64,16 @@ fun ImuScreen() {
     val orientation = sensorManager.orientation.collectAsState()
     val accel = sensorManager.acceleration.collectAsState()
 
-    // Rolling history for yaw graph
+    // Rolling history for angle value graph
     val maxPoints = 60
+    var pitchHistory by remember { mutableStateOf(List(maxPoints) { 0f }) }
     var yawHistory by remember { mutableStateOf(List(maxPoints) { 0f }) }
+    var rollHistory by remember { mutableStateOf(List(maxPoints) { 0f }) }
 
-    LaunchedEffect(orientation.value.yaw) {
+    LaunchedEffect(orientation.value) {
+        pitchHistory = (pitchHistory + orientation.value.pitch).takeLast(maxPoints)
         yawHistory = (yawHistory + orientation.value.yaw).takeLast(maxPoints)
+        rollHistory = (rollHistory + orientation.value.roll).takeLast(maxPoints)
     }
 
     Scaffold(
@@ -62,104 +81,120 @@ fun ImuScreen() {
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
 
+            // Display orientation indicators along bezel
             Canvas(modifier = Modifier.fillMaxSize()) {
-                val stroke = 6.dp.toPx()
+                val stroke = 4.dp.toPx()
 
                 // Outermost radius (touching bezel)
-                val outerRadius = size.minDimension / 2f - stroke
+                val outerRadius = size.minDimension / 2f - stroke / 2
 
-                // Each arc is inset by one stroke width
-                val yawRadius = outerRadius
-                val pitchRadius = outerRadius - stroke * 1.5f
-                val rollRadius = outerRadius - stroke * 3f
-                val testRadius = outerRadius - stroke * 4.5f
-
-                // Helper to draw a centered arc at a given radius
-                fun drawArcAtRadius(color: Color, sweep: Float, radius: Float) {
-                    drawArc(
-                        color = color,
-                        startAngle = -90f,
-                        sweepAngle = sweep,
-                        useCenter = false,
-                        topLeft = Offset(
-                            x = size.width / 2f - radius,
-                            y = size.height / 2f - radius
-                        ),
-                        size = androidx.compose.ui.geometry.Size(radius * 2, radius * 2),
-                        style = Stroke(width = stroke)
-                    )
-                }
-
-                // Aviation‑standard IMU colors:
-                // Yaw = Yellow
-                // Pitch = Green
-                // Roll = Magenta
-
-                drawArcAtRadius(Color.Yellow, orientation.value.yaw, yawRadius)
-                drawArcAtRadius(Color.Green, orientation.value.pitch, pitchRadius)
-                drawArcAtRadius(Color.Magenta, orientation.value.roll, rollRadius)
-
-                // Test arc (inner)
-                drawArcAtRadius(Color.Red, 20f, testRadius)
+                drawArcAtRadius(
+                    color = AngleColorLookup.yaw,
+                    sweep = orientation.value.yaw,
+                    radius = outerRadius,
+                    stroke = stroke,
+                    alpha = 0.7f
+                )
+                drawArcAtRadius(
+                    color = AngleColorLookup.pitch,
+                    sweep = orientation.value.pitch,
+                    radius = outerRadius - stroke * 1f,
+                    stroke = stroke,
+                    alpha = 0.7f
+                )
+                drawArcAtRadius(
+                    color = AngleColorLookup.roll,
+                    sweep = orientation.value.roll,
+                    radius = outerRadius - stroke * 2f,
+                    stroke = stroke,
+                    alpha = 0.7f
+                )
             }
 
-            // --- Main content ---
-            ScalingLazyColumn(
+            // Display orientation graphs
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp),
-                autoCentering = AutoCenteringParams(itemIndex = 0)
+                    .fillMaxWidth(0.8f)
+                    .fillMaxHeight(0.4f)
+                    .background(Color(100, 100, 100, 20))
+                    .border(width = 1.dp, color = Color(1f, 1f, 1f, 0.3f))
+                    .align(Alignment.Center),
             ) {
-                item { Text("IMU") }
+                ValueGraph(
+                    values = rollHistory,
+                    color = AngleColorLookup.roll,
+                    alpha = 0.4f
+                )
+                ValueGraph(
+                    values = pitchHistory,
+                    color = AngleColorLookup.pitch,
+                    alpha = 0.4f
+                )
+                ValueGraph(
+                    values = yawHistory,
+                    color = AngleColorLookup.yaw,
+                    alpha = 0.4f
+                )
+            }
 
-                item {
-                    Text("Accel: ${accel.value.x}, ${accel.value.y}, ${accel.value.z}")
-                }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .fillMaxHeight()
+                    .padding(6.dp)
+                    .align(Alignment.Center),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "IMU",
+                    style = MaterialTheme.typography.title1,
+                    textAlign = TextAlign.Center
+                )
 
-                item {
+                fun Float.format() = String.format("%.2f", this)
+                Text(
+                    """
+    Accel:
+      x = ${accel.value.x.format()}
+      y = ${accel.value.y.format()}
+      z = ${accel.value.z.format()}
+    """.trimIndent(),
+                    fontSize = 14.sp
+                )
+
+
+                ImuValueBlock("Orientation") {
                     Text(
-                        "Orientation: " +
-                                "${orientation.value.yaw.toInt()}, " +
-                                "${orientation.value.pitch.toInt()}, " +
-                                "${orientation.value.roll.toInt()}"
+                        buildAnnotatedString {
+                            withStyle(SpanStyle(color = AngleColorLookup.yaw)) {
+                                append("Yaw   = ${orientation.value.yaw.toInt()}°\n")
+                            }
+                            withStyle(SpanStyle(color = AngleColorLookup.pitch)) {
+                                append("Pitch = ${orientation.value.pitch.toInt()}°\n")
+                            }
+                            withStyle(SpanStyle(color = AngleColorLookup.roll)) {
+                                append("Roll  = ${orientation.value.roll.toInt()}°")
+                            }
+                        },
+                        fontSize = 18.sp
                     )
-                }
-
-                item {
-                    Spacer(Modifier.height(6.dp))
-                    Text("Yaw Graph")
-                }
-
-                item {
-                    YawGraph(yawHistory)
                 }
             }
         }
     }
 }
 
-/**
- * Simple line graph showing yaw changes over time.
- */
 @Composable
-fun YawGraph(values: List<Float>) {
-    Canvas(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(40.dp)
-    ) {
-        if (values.isEmpty()) return@Canvas
-
-        val max = 360f
-        val stepX = size.width / (values.size - 1).coerceAtLeast(1)
-        var last = Offset(0f, size.height - (values.first() / max) * size.height)
-
-        values.forEachIndexed { i, v ->
-            val x = i * stepX
-            val y = size.height - (v / max) * size.height
-            val point = Offset(x, y)
-            drawLine(Color.Cyan, last, point, strokeWidth = 2f)
-            last = point
-        }
+fun ImuValueBlock(
+    title: String,
+    content: @Composable () -> Unit
+) {
+    Column(modifier = Modifier.padding(vertical = 4.dp)) {
+        Text(
+            text = title,
+            fontSize = 12.sp,
+            color = Color.White
+        )
+        content()
     }
 }
