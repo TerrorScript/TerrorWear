@@ -51,7 +51,7 @@ fun WifiToolsScreen(
                     label = { Text("Start UDP Listener") },
                     icon = {
                         Icon(
-                            painter = painterResource(R.drawable.baseline_arrow_back_ios_new_24),
+                            painter = painterResource(WifiIcons.UdpStartListening),
                             contentDescription = "Start UDP"
                         )
                     },
@@ -64,7 +64,7 @@ fun WifiToolsScreen(
                     label = { Text("Send UDP Packet") },
                     icon = {
                         Icon(
-                            painter = painterResource(R.drawable.baseline_send_24),
+                            painter = painterResource(WifiIcons.UdpSendPacket),
                             contentDescription = "Send UDP"
                         )
                     },
@@ -130,7 +130,9 @@ fun WifiToolsScreen(
                             contentDescription = "Ping"
                         )
                     },
-                    onClick = { /* TODO */ }
+                    onClick = {
+                        TODO()
+                    }
                 )
             }
 
@@ -143,7 +145,9 @@ fun WifiToolsScreen(
                             contentDescription = "mDNS"
                         )
                     },
-                    onClick = { /* TODO */ }
+                    onClick = {
+                        TODO()
+                    }
                 )
             }
 
@@ -156,7 +160,9 @@ fun WifiToolsScreen(
                             contentDescription = "SSDP"
                         )
                     },
-                    onClick = { /* TODO */ }
+                    onClick = {
+                        TODO()
+                    }
                 )
             }
 
@@ -183,11 +189,11 @@ fun WifiToolsScreen(
                     label = { Text("Back to Info") },
                     icon = {
                         Icon(
-                            painter = painterResource(R.drawable.baseline_arrow_back_ios_new_24),
+                            painter = painterResource(WifiIcons.NavigateBack),
                             contentDescription = "Back"
                         )
                     },
-                    onClick = { navController.navigate(Route.WifiInfo.path) }
+                    onClick = { navController.popBackStack() }
                 )
             }
         }

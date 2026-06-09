@@ -1,6 +1,7 @@
 package com.terrsus.terrorwear
 
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -32,6 +33,8 @@ import androidx.wear.tooling.preview.devices.WearDevices
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.i("TW/MainActivity", "onCreate")
+
         // Show splash screen until first frame is ready
         installSplashScreen()
 
@@ -46,6 +49,7 @@ class MainActivity : ComponentActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         // Set the root composable for the app
+        Log.i("TW/MainActivity", "setContent")
         setContent {
             CompositionLocalProvider(
                 LocalAppContainer provides AppContainer

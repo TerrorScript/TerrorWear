@@ -9,12 +9,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.wear.compose.material.TimeText
 import com.terrsus.terrorwear.AppContainer
 import com.terrsus.terrorwear.features.games.tilt.domain.model.TiltPhase
-import com.terrsus.terrorwear.features.games.tilt.logic.TiltSensorRepositoryImpl
+import com.terrsus.terrorwear.features.games.tilt.domain.logic.TiltSensorRepositoryImpl
 import com.terrsus.terrorwear.modules.games.tilt.ui.draw.*
 import com.terrsus.terrorwear.modules.games.tilt.viewmodel.TiltViewModel
 import kotlinx.coroutines.isActive

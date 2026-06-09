@@ -33,10 +33,6 @@ class SensorManager(context: Context) : SensorEventListener {
     private val _accel = MutableStateFlow(AccelerationData(0f, 0f, 0f))
     val acceleration: StateFlow<AccelerationData> = _accel
 
-    /** Convenience heading value (yaw only). */
-    private val _heading = MutableStateFlow(0f)
-    val heading: StateFlow<Float> = _heading
-
     /** Optional callback for game logic when orientation changes. */
     var onOrientationChanged: ((OrientationData) -> Unit)? = null
 
@@ -44,12 +40,7 @@ class SensorManager(context: Context) : SensorEventListener {
     var onTap: (() -> Unit)? = null
 
     init {
-        Log.d("TW/SensorManager", "init")
-
-        // Keep heading updated whenever orientation changes.
-        onOrientationChanged = { data ->
-            _heading.value = data.yaw
-        }
+        Log.i("TW/SensorManager", "init")
     }
 
     // Sensors we listen to.
@@ -64,7 +55,7 @@ class SensorManager(context: Context) : SensorEventListener {
      * and tap detection.
      */
     fun start() {
-        Log.d("TW/SensorManager", "start(): registering listeners.")
+        Log.d("TW/SensorManager", "start() registering listeners")
 
         rotationVector?.let {
             android.registerListener(this, it, AndroidSensorManager.SENSOR_DELAY_GAME)
@@ -76,7 +67,7 @@ class SensorManager(context: Context) : SensorEventListener {
             android.registerListener(this, it, AndroidSensorManager.SENSOR_DELAY_NORMAL)
         }
 
-        Log.d("TW/SensorManager", "start(): finished registering.")
+        Log.d("TW/SensorManager", "start() registering finished")
     }
 
     /**
@@ -85,12 +76,12 @@ class SensorManager(context: Context) : SensorEventListener {
      * Unregisters all listeners and cancels background work.
      */
     fun stop() {
-        Log.d("TW/SensorManager", "stop(): unregistering listeners")
+        Log.d("TW/SensorManager", "stop() unregistering listeners")
 
         android.unregisterListener(this)
         scope.coroutineContext.cancelChildren()
 
-        Log.d("TW/SensorManager", "stop(): finished cleanup")
+        Log.d("TW/SensorManager", "stop() finished cleanup")
     }
 
     /**

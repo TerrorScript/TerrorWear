@@ -1,4 +1,4 @@
-package com.terrsus.terrorwear.features.games.tilt.logic
+package com.terrsus.terrorwear.features.games.tilt.domain.logic
 
 import com.terrsus.terrorwear.domain.math.Vector2
 import com.terrsus.terrorwear.features.sensors.SensorManager

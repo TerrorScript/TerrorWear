@@ -1,4 +1,4 @@
-package com.terrsus.terrorwear.features.wifi
+package com.terrsus.terrorwear.features.wifi.tcpserver
 
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -10,28 +10,28 @@ import java.net.Socket
  * Simple single‑client TCP server for Wi‑Fi.
  *
  * Listens on a fixed local port, accepts a single client connection, and
- * exposes incoming data as a [Flow] of raw [ByteArray] packets.
+ * exposes incoming data as a [kotlinx.coroutines.flow.Flow] of raw [ByteArray] packets.
  */
-class WifiTcpServer(
+class WifiTcpServerImpl(
     private val port: Int
-) {
+): WifiTcpServer {
     private val serverSocket = ServerSocket(port)
     private var clientSocket: Socket? = null
 
     /** Local TCP port this server is listening on. */
-    val listeningPort: Int
+    override val listeningPort: Int
         get() = port
 
-    private val incoming = Channel<ByteArray>(Channel.BUFFERED)
+    private val incoming = Channel<ByteArray>(Channel.Factory.BUFFERED)
 
     /** Stream of incoming TCP packets from the connected client. */
-    val packets: Flow<ByteArray> = incoming.receiveAsFlow()
+    override val packets: Flow<ByteArray> = incoming.receiveAsFlow()
 
     /**
      * Starts a background thread that accepts a single client and then
      * continuously reads from it, emitting packets into [packets].
      */
-    fun start() {
+    override fun start() {
         Thread {
             clientSocket = serverSocket.accept()
             val inputStream = clientSocket!!.getInputStream()
@@ -53,7 +53,7 @@ class WifiTcpServer(
     /**
      * Sends the given [data] to the connected TCP client, if any.
      */
-    fun send(data: ByteArray) {
+    override fun send(data: ByteArray) {
         clientSocket?.getOutputStream()?.write(data)
         clientSocket?.getOutputStream()?.flush()
     }
@@ -61,7 +61,7 @@ class WifiTcpServer(
     /**
      * Stops the server and closes the client connection if present.
      */
-    fun stop() {
+    override fun stop() {
         clientSocket?.close()
         serverSocket.close()
     }

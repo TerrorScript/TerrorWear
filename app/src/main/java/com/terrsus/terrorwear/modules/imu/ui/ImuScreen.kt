@@ -5,11 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,26 +18,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.painter.BrushPainter
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.wear.compose.foundation.AnchorType
-import androidx.wear.compose.foundation.CurvedLayout
-import androidx.wear.compose.foundation.CurvedModifier
-import androidx.wear.compose.foundation.CurvedScope
-import androidx.wear.compose.foundation.curvedComposable
-import androidx.wear.compose.foundation.lazy.AutoCenteringParams
-import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
-import androidx.wear.compose.foundation.size
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
@@ -90,7 +75,7 @@ fun ImuScreen() {
 
                 drawArcAtRadius(
                     color = AngleColorLookup.yaw,
-                    sweep = orientation.value.yaw,
+                    sweep = -orientation.value.yaw,
                     radius = outerRadius,
                     stroke = stroke,
                     alpha = 0.7f
@@ -104,7 +89,7 @@ fun ImuScreen() {
                 )
                 drawArcAtRadius(
                     color = AngleColorLookup.roll,
-                    sweep = orientation.value.roll,
+                    sweep = -orientation.value.roll,
                     radius = outerRadius - stroke * 2f,
                     stroke = stroke,
                     alpha = 0.7f
@@ -153,12 +138,7 @@ fun ImuScreen() {
 
                 fun Float.format() = String.format("%.2f", this)
                 Text(
-                    """
-    Accel:
-      x = ${accel.value.x.format()}
-      y = ${accel.value.y.format()}
-      z = ${accel.value.z.format()}
-    """.trimIndent(),
+                    "Accel:\nX = ${accel.value.x.format()}\nY = ${accel.value.y.format()}\nZ = ${accel.value.z.format()}",
                     fontSize = 14.sp
                 )
 
@@ -167,13 +147,13 @@ fun ImuScreen() {
                     Text(
                         buildAnnotatedString {
                             withStyle(SpanStyle(color = AngleColorLookup.yaw)) {
-                                append("Yaw   = ${orientation.value.yaw.toInt()}°\n")
+                                append("Y = ${orientation.value.yaw.toInt()}°\n")
                             }
                             withStyle(SpanStyle(color = AngleColorLookup.pitch)) {
-                                append("Pitch = ${orientation.value.pitch.toInt()}°\n")
+                                append("P = ${orientation.value.pitch.toInt()}°\n")
                             }
                             withStyle(SpanStyle(color = AngleColorLookup.roll)) {
-                                append("Roll  = ${orientation.value.roll.toInt()}°")
+                                append("R = ${orientation.value.roll.toInt()}°")
                             }
                         },
                         fontSize = 18.sp

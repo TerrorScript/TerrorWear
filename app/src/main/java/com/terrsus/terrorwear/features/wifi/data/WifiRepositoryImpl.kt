@@ -1,10 +1,10 @@
 package com.terrsus.terrorwear.features.wifi.data
 
 import com.terrsus.terrorwear.domain.wifi.model.WifiPacket
-import com.terrsus.terrorwear.features.wifi.WifiManager
-import com.terrsus.terrorwear.features.wifi.WifiTcpClient
-import com.terrsus.terrorwear.features.wifi.WifiTcpServer
-import com.terrsus.terrorwear.features.wifi.WifiUdpClient
+import com.terrsus.terrorwear.features.wifi.manager.WifiManager
+import com.terrsus.terrorwear.features.wifi.tcpclient.WifiTcpClient
+import com.terrsus.terrorwear.features.wifi.tcpserver.WifiTcpServer
+import com.terrsus.terrorwear.features.wifi.udpclient.WifiUdpClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.map
  * Converts raw byte arrays into domain-level [WifiPacket] objects.
  */
 class WifiRepositoryImpl(
-    private val manager: WifiManager
+    private val wifiManager: WifiManager
 ) : WifiRepository {
 
     private var udpClient: WifiUdpClient? = null
@@ -72,19 +72,19 @@ class WifiRepositoryImpl(
     // ---------------------------------------------------------
 
     override fun startUdp(port: Int) {
-        udpClient = manager.startUdp(port)
+        udpClient = wifiManager.startUdp(port)
     }
 
     override fun startTcpClient(host: String, port: Int) {
-        tcpClient = manager.startTcpClient(host, port)
+        tcpClient = wifiManager.startTcpClient(host, port)
     }
 
     override fun startTcpServer(port: Int) {
-        tcpServer = manager.startTcpServer(port)
+        tcpServer = wifiManager.startTcpServer(port)
     }
 
     override fun stopAll() {
-        manager.stopAll()
+        wifiManager.stopAll()
         udpClient = null
         tcpClient = null
         tcpServer = null

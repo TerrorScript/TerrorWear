@@ -19,6 +19,10 @@ import kotlinx.coroutines.flow.sample
 class BleManager(
     private val client: BleScannerClient
 ) {
+    init {
+        Log.d("TW/BleManager", "init")
+    }
+
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     val isScanning = client.isScanning

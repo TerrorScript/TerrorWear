@@ -4,7 +4,7 @@ import android.util.Log
 import com.terrsus.terrorwear.domain.features.Feature.*
 import com.terrsus.terrorwear.features.ble.insecure.BleManager
 import com.terrsus.terrorwear.features.sensors.SensorManager
-import com.terrsus.terrorwear.features.wifi.WifiManager
+import com.terrsus.terrorwear.features.wifi.manager.WifiManager
 import com.terrsus.terrorwear.ui.navigation.Route
 
 /**
@@ -30,7 +30,9 @@ class FeatureLifecycleController(
     private val wifiProvider: () -> WifiManager,
     private val sensorsProvider: () -> SensorManager
 ) {
-
+    init {
+        Log.i("TW/FeatureLifecycleController", "init")
+    }
 
     /**
      * Called whenever navigation changes.
@@ -153,7 +155,7 @@ class FeatureLifecycleController(
 
         Log.d(
             "TW/FeatureLifecycleController",
-            "Active features now: $newFeatures"
+            "Active features: $newFeatures"
         )
     }
 }

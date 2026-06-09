@@ -1,12 +1,14 @@
 package com.terrsus.terrorwear
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.util.Log
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.terrsus.terrorwear.features.ble.data.BleRepository
 import com.terrsus.terrorwear.features.ble.data.BleRepositoryImpl
 import com.terrsus.terrorwear.features.ble.domain.usecase.*
 import com.terrsus.terrorwear.features.ble.insecure.*
-import com.terrsus.terrorwear.features.ble.common.model.FakeBleGattClient
+import com.terrsus.terrorwear.features.ble.common.model.BleGattClientFake
 import com.terrsus.terrorwear.features.ble.insecure.transport.BleGattClient
 import com.terrsus.terrorwear.features.ble.insecure.transport.BleGattClientImpl
 import com.terrsus.terrorwear.features.sensors.SensorManager
@@ -19,9 +21,12 @@ import com.terrsus.terrorwear.features.storage.room.database.AppDatabase
 import com.terrsus.terrorwear.features.storage.room.repository.HighscoreRepositoryRoomImpl
 import com.terrsus.terrorwear.features.storage.room.repository.PairingKeyRepositoryRoomImpl
 import com.terrsus.terrorwear.features.storage.room.repository.TrustedDeviceRepositoryRoomImpl
-import com.terrsus.terrorwear.features.wifi.WifiManager
+import com.terrsus.terrorwear.features.wifi.manager.WifiManager
 import com.terrsus.terrorwear.features.wifi.data.WifiRepository
 import com.terrsus.terrorwear.features.wifi.data.WifiRepositoryImpl
+import com.terrsus.terrorwear.features.wifi.networkinfoprovider.WifiNetworkInfoProvider
+import com.terrsus.terrorwear.features.wifi.networkinfoprovider.WifiNetworkInfoProviderFake
+import com.terrsus.terrorwear.features.wifi.networkinfoprovider.WifiNetworkInfoProviderImpl
 import com.terrsus.terrorwear.util.DeviceUtils
 import java.io.File
 
@@ -36,6 +41,9 @@ import java.io.File
  * Call [init] once from [App] before accessing any members.
  */
 object AppContainer {
+    init {
+        Log.i("TW/AppContainer", "init")
+    }
 
     private lateinit var appContext: Context
 
@@ -109,7 +117,7 @@ object AppContainer {
 
     /** BLE GATT client (fake on emulator). */
     val bleGattClient: BleGattClient by lazy {
-        if (DeviceUtils.isEmulator) FakeBleGattClient(appContext)
+        if (DeviceUtils.isEmulator) BleGattClientFake(appContext)
         else BleGattClientImpl(appContext)
     }
 
@@ -133,14 +141,32 @@ object AppContainer {
     val stopBleScanUseCase by lazy { StopBleScanUseCase(bleRepository) }
 
     // -------------------------------------------------------------------------
-    // Wi‑Fi
-    // -------------------------------------------------------------------------
+// Wi‑Fi
+// -------------------------------------------------------------------------
 
     /** Wi‑Fi manager providing UDP, TCP client, and TCP server functionality. */
     val wifiManager: WifiManager by lazy { WifiManager() }
 
+    /**
+     * Provider for Wi‑Fi network metadata (SSID, RSSI, IP, etc.).
+     *
+     * Uses ConnectivityManager on real devices and a fake provider on emulators
+     * where Wi‑Fi APIs are unavailable.
+     */
+    val wifiNetworkInfoProvider: WifiNetworkInfoProvider by lazy {
+        if (DeviceUtils.isEmulator)
+            WifiNetworkInfoProviderFake()
+        else {
+            val connectivityManager = appContext.getSystemService(ConnectivityManager::class.java)
+            WifiNetworkInfoProviderImpl(connectivityManager)
+        }
+    }
+
     /** Wi‑Fi repository exposing packet flows and send/receive operations. */
-    val wifiRepository: WifiRepository by lazy { WifiRepositoryImpl(wifiManager) }
+    val wifiRepository: WifiRepository by lazy {
+        WifiRepositoryImpl(wifiManager)
+    }
+
 
     // -------------------------------------------------------------------------
     // Sensors
@@ -159,8 +185,8 @@ object AppContainer {
         com.terrsus.terrorwear.features.settings.data.datastore.SettingsStore(
             com.terrsus.terrorwear.features.settings.data.datastore.KeyValueStore(
                 com.terrsus.terrorwear.features.settings.data.datastore.DataStoreFactory.createSettingsStore(
-                        appContext
-                    )
+                    appContext
+                )
             )
         )
     }

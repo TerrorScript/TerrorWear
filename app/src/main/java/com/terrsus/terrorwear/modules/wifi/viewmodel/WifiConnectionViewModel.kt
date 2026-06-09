@@ -1,5 +1,6 @@
 package com.terrsus.terrorwear.modules.wifi.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.terrsus.terrorwear.AppContainer
@@ -28,6 +29,7 @@ class WifiConnectionViewModel : ViewModel() {
     val eventLog: StateFlow<List<String>> = _eventLog
 
     private fun log(message: String) {
+        Log.d("TW/WifiConnectionViewModel", message)
         _eventLog.value = _eventLog.value + message
         _status.value = message
     }
@@ -41,6 +43,7 @@ class WifiConnectionViewModel : ViewModel() {
     }
 
     fun restartUdp(port: Int) {
+        log("UDP listener starting on :$port")
         repo.startUdp(port)
         log("UDP listener started on :$port")
     }
@@ -49,11 +52,13 @@ class WifiConnectionViewModel : ViewModel() {
     // TCP Client Actions
     // ---------------------------------------------------------
     fun sendTcp(text: String) {
+        log("Sending TCP packet")
         repo.sendTcp(text.encodeToByteArray())
         log("Sent TCP packet")
     }
 
     fun restartTcp(host: String, port: Int) {
+        log("TCP client connecting → $host:$port")
         repo.startTcpClient(host, port)
         log("TCP client connected → $host:$port")
     }
@@ -62,6 +67,7 @@ class WifiConnectionViewModel : ViewModel() {
     // TCP Server Actions
     // ---------------------------------------------------------
     fun startTcpServer(port: Int) {
+        log("TCP server starting on :$port")
         repo.startTcpServer(port)
         log("TCP server started on :$port")
     }
@@ -70,6 +76,7 @@ class WifiConnectionViewModel : ViewModel() {
     // Stop Everything
     // ---------------------------------------------------------
     fun stopAll() {
+        log("Stopped all Wi‑Fi sockets")
         repo.stopAll()
         log("Stopped all Wi‑Fi sockets")
     }

@@ -1,4 +1,4 @@
-package com.terrsus.terrorwear.features.wifi
+package com.terrsus.terrorwear.features.wifi.udpclient
 
 import android.util.Log
 import kotlinx.coroutines.channels.Channel
@@ -11,27 +11,27 @@ import java.net.InetAddress
 /**
  * Simple UDP listener/sender for Wi‑Fi traffic.
  *
- * Listens on a fixed local port and exposes incoming datagrams as a cold [Flow]
+ * Listens on a fixed local port and exposes incoming datagrams as a cold [kotlinx.coroutines.flow.Flow]
  * of raw [ByteArray] packets. Sending is connectionless and requires host/port
  * per call.
  */
-class WifiUdpClient(
+class WifiUdpClientImpl(
     private val listenPort: Int
-) {
+): WifiUdpClient {
     private val socket = DatagramSocket(listenPort)
-    private val incoming = Channel<ByteArray>(Channel.BUFFERED)
+    private val incoming = Channel<ByteArray>(Channel.Factory.BUFFERED)
 
     /** Stream of incoming UDP packets as raw bytes. */
-    val packets: Flow<ByteArray> = incoming.receiveAsFlow()
+    override val packets: Flow<ByteArray> = incoming.receiveAsFlow()
 
     /** Local UDP port this client is listening on. */
-    val listeningPort: Int
+    override val listeningPort: Int
         get() = listenPort
 
     /**
      * Sends a UDP datagram to the given [host] and [port] with the provided [data].
      */
-    fun send(data: ByteArray, host: String, port: Int) {
+    override fun send(data: ByteArray, host: String, port: Int) {
         val address = InetAddress.getByName(host)
         val packet = DatagramPacket(data, data.size, address, port)
         socket.send(packet)
@@ -41,7 +41,7 @@ class WifiUdpClient(
      * Starts a background thread that continuously receives UDP packets
      * and forwards them into [packets].
      */
-    fun start() {
+    override fun start() {
         Log.d("TW/WifiUdpClient", "starting")
 
         Thread {
@@ -62,7 +62,7 @@ class WifiUdpClient(
     /**
      * Stops the UDP listener and closes the underlying socket.
      */
-    fun stop() {
+    override fun stop() {
         Log.d("TW/WifiUdpClient", "stopping")
 
         socket.close()

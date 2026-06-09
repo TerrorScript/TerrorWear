@@ -8,10 +8,11 @@ class BleScannerClient(
     context: Context
 ) {
     init {
-        Log.d("TW/BleClient", "isEmulator = ${DeviceUtils.isEmulator}")
+        Log.d("TW/BleScannerClient", "init")
+        Log.d("TW/BleScannerClient", "isEmulator = ${DeviceUtils.isEmulator}")
     }
     private val scanner: BleScanner =
-        if (DeviceUtils.isEmulator) FakeBleScanner()
+        if (DeviceUtils.isEmulator) BleScannerFake()
         else BleScannerImpl(context)
 
     val isScanning = scanner.isScanning

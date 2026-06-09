@@ -76,7 +76,7 @@ fun BleScreen(
             onSelectDevice = { device ->
                 if (device == viewModel.selectedDevice) {
                     haptics.performHapticFeedback(HapticFeedbackType.Reject)
-                    viewModel.showStatus("Device already selected.")
+                    viewModel.showStatus("Device already selected")
                 } else {
                     viewModel.selectDevice(device)
                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)

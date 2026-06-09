@@ -3,6 +3,7 @@ package com.terrsus.terrorwear.modules.wifi.ui
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -42,6 +43,10 @@ fun WifiInfoScreen(
     val linkSpeed by viewModel.linkSpeed.collectAsState()
     val ipAddress by viewModel.ipAddress.collectAsState()
     val security by viewModel.security.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.startObserving()
+    }
 
     Scaffold(
         timeText = { TimeText() },

@@ -18,7 +18,7 @@ val possibleGattProperties = listOf(
     0x02 or 0x08 or 0x10     // Read + Write + Notify
 )
 
-class FakeBleGattClient(
+class BleGattClientFake(
     private val context: Context
 ) : BleGattClient {
 

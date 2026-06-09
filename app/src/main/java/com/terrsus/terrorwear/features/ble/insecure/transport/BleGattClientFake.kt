@@ -25,7 +25,7 @@ import kotlin.random.Random
  *
  * No Android Bluetooth APIs are used.
  */
-class FakeBleGattClient : BleGattClient {
+class BleGattClientFake : BleGattClient {
 
     private val scope = CoroutineScope(Dispatchers.Default)
 

@@ -65,11 +65,11 @@ fun WifiLogScreen(
                     label = { Text("Back to Tools") },
                     icon = {
                         Icon(
-                            painter = painterResource(R.drawable.baseline_arrow_back_ios_new_24),
+                            painter = painterResource(WifiIcons.NavigateBack),
                             contentDescription = "Back"
                         )
                     },
-                    onClick = { navController.navigate(Route.WifiTools.path) }
+                    onClick = { navController.popBackStack() }
                 )
             }
         }

@@ -23,6 +23,8 @@ import com.terrsus.terrorwear.AppContainer
 fun CompassScreen() {
     val sensorManager = AppContainer.sensorManager
 
+    val orientation = sensorManager.orientation.collectAsState()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -30,7 +32,7 @@ fun CompassScreen() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "${sensorManager.heading.value.toInt()}°",
+            text = "${orientation.value.yaw.toInt()}°",
             textAlign = TextAlign.Center
         )
     }

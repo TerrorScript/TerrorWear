@@ -17,7 +17,10 @@ val fakeList = listOf(
     BleDevice("AA:BB:CC:DD:EE:05", "Nordic UART Service", -50)
 )
 
-class FakeBleScanner : BleScanner {
+class BleScannerFake : BleScanner {
+    init {
+        Log.d("TW/BleScanner", "init FakeBleScanner, created instance = ${this.hashCode()}")
+    }
 
     override val isScanning = MutableStateFlow(false)
     override val scanResults = MutableStateFlow(fakeList)
@@ -53,9 +56,5 @@ class FakeBleScanner : BleScanner {
 
         updated.add(device)
         scanResults.value = updated
-    }
-
-    init {
-        Log.d("TW/BLE", "FakeBleScanner created instance = ${this.hashCode()}")
     }
 }
