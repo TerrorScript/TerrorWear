@@ -1,5 +1,6 @@
 package com.terrsus.terrorwear.ui.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -50,9 +51,9 @@ fun NavGraph(navController: NavHostController) {
     // remember {} ensures it is not recreated on every recomposition.
     val lifecycle = remember {
         FeatureLifecycleController(
-            ble = app.bleManager,
-            wifi = app.wifiManager,
-            sensors = app.sensorManager
+            bleProvider = { app.bleManager },
+            wifiProvider = { app.wifiManager },
+            sensorsProvider = { app.sensorManager }
         )
     }
 
@@ -76,7 +77,7 @@ fun NavGraph(navController: NavHostController) {
     // Log route changes
     LaunchedEffect(navController) {
         navController.currentBackStackEntryFlow.collect { entry ->
-            android.util.Log.d("NAV", "Navigated to route: ${entry.destination.route}")
+            Log.d("TW/Nav", "Navigated to route: ${entry.destination.route}")
         }
     }
 

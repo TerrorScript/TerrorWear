@@ -61,13 +61,13 @@ fun BleScreen(
             searchQuery = searchQuery,
             onSearchChange = { viewModel.updateSearchQuery(it) },
             onToggleScan = {
-                Log.i("BLE", "Toggle Scan")
+                Log.i("TW/BLE", "Toggle Scan")
                 if (scanning) {
-                    Log.d("BLE", "Stop Scan")
+                    Log.d("TW/BLE", "Stop Scan")
                     viewModel.endScan()
                     viewModel.showStatus("Scan stopped")
                 } else {
-                    Log.d("BLE", "Start Scan")
+                    Log.d("TW/BLE", "Start Scan")
                     viewModel.beginScan()
                     viewModel.showStatus("Scan started")
                 }

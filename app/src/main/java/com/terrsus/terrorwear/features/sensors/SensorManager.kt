@@ -44,7 +44,7 @@ class SensorManager(context: Context) : SensorEventListener {
     var onTap: (() -> Unit)? = null
 
     init {
-        Log.d("SensorManager", "init")
+        Log.d("TW/SensorManager", "init")
 
         // Keep heading updated whenever orientation changes.
         onOrientationChanged = { data ->
@@ -64,7 +64,7 @@ class SensorManager(context: Context) : SensorEventListener {
      * and tap detection.
      */
     fun start() {
-        Log.d("SensorManager", "start(): registering listeners.")
+        Log.d("TW/SensorManager", "start(): registering listeners.")
 
         rotationVector?.let {
             android.registerListener(this, it, AndroidSensorManager.SENSOR_DELAY_GAME)
@@ -76,7 +76,7 @@ class SensorManager(context: Context) : SensorEventListener {
             android.registerListener(this, it, AndroidSensorManager.SENSOR_DELAY_NORMAL)
         }
 
-        Log.d("SensorManager", "start(): finished registering.")
+        Log.d("TW/SensorManager", "start(): finished registering.")
     }
 
     /**
@@ -85,12 +85,12 @@ class SensorManager(context: Context) : SensorEventListener {
      * Unregisters all listeners and cancels background work.
      */
     fun stop() {
-        Log.d("SensorManager", "stop(): unregistering listeners")
+        Log.d("TW/SensorManager", "stop(): unregistering listeners")
 
         android.unregisterListener(this)
         scope.coroutineContext.cancelChildren()
 
-        Log.d("SensorManager", "stop(): finished cleanup")
+        Log.d("TW/SensorManager", "stop(): finished cleanup")
     }
 
     /**
@@ -125,7 +125,7 @@ class SensorManager(context: Context) : SensorEventListener {
      * Accuracy changes are ignored.
      */
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        Log.d("SensorManager", "onAccuracyChanged $sensor, $accuracy")
+        Log.d("TW/SensorManager", "onAccuracyChanged $sensor, $accuracy")
         // Not used.
     }
 }

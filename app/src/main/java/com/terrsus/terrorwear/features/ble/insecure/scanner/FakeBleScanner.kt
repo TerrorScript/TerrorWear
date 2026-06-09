@@ -37,25 +37,25 @@ class FakeBleScanner : BleScanner {
             }
         }
 
-        Log.d("BLE", "FakeBleScanner scan started")
+        Log.d("TW/BLE", "FakeBleScanner scan started")
     }
 
     override fun stopScan() {
         isScanning.value = false
-        Log.d("BLE", "FakeBleScanner scan stopped")
+        Log.d("TW/BLE", "FakeBleScanner scan stopped")
     }
 
     private fun addDevice(address: String, name: String, rssi: Int) {
         val updated = scanResults.value.toMutableList()
         val device = BleDevice(address, name, rssi)
 
-        Log.d("BLE", "FakeBleScanner adding device: $device")
+        Log.d("TW/BLE", "FakeBleScanner adding device: $device")
 
         updated.add(device)
         scanResults.value = updated
     }
 
     init {
-        Log.d("BLE", "FakeBleScanner created instance = ${this.hashCode()}")
+        Log.d("TW/BLE", "FakeBleScanner created instance = ${this.hashCode()}")
     }
 }

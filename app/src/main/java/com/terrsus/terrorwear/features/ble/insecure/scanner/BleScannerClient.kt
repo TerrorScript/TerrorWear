@@ -7,13 +7,12 @@ import com.terrsus.terrorwear.util.DeviceUtils
 class BleScannerClient(
     context: Context
 ) {
-
+    init {
+        Log.d("TW/BleClient", "isEmulator = ${DeviceUtils.isEmulator}")
+    }
     private val scanner: BleScanner =
         if (DeviceUtils.isEmulator) FakeBleScanner()
         else BleScannerImpl(context)
-    init {
-        Log.d("BleClient", "isEmulator = ${DeviceUtils.isEmulator}")
-    }
 
     val isScanning = scanner.isScanning
     val scanResults = scanner.scanResults

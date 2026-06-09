@@ -1,5 +1,6 @@
 package com.terrsus.terrorwear.ui.screens.ble
 
+import android.app.Activity
 import android.app.RemoteInput
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,7 +30,12 @@ fun SearchBarSmall(
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        val remoteInput = RemoteInput.getResultsFromIntent(result.data)
+        val data = result.data
+        if (result.resultCode != Activity.RESULT_OK || data == null) {
+            return@rememberLauncherForActivityResult
+        }
+
+        val remoteInput = RemoteInput.getResultsFromIntent(data)
         val text = remoteInput?.getCharSequence("query")?.toString()
         if (text != null) onQueryChange(text)
     }

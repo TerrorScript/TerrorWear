@@ -1,6 +1,7 @@
 package com.terrsus.terrorwear.features.ble.insecure
 
 import android.annotation.SuppressLint
+import android.util.Log
 import com.terrsus.terrorwear.features.ble.domain.model.BleDevice
 import com.terrsus.terrorwear.features.ble.insecure.scanner.BleScannerClient
 import kotlinx.coroutines.CoroutineScope
@@ -27,6 +28,8 @@ class BleManager(
 
     @OptIn(FlowPreview::class)
     fun start() {
+        Log.d("TW/BleManager", "Start scan")
+
         client.scanResults
             .sample(250)
             .onEach { devices -> _devices.value = devices }

@@ -26,9 +26,9 @@ import com.terrsus.terrorwear.ui.navigation.Route
  * - UI screens manually managing hardware
  */
 class FeatureLifecycleController(
-    private val ble: BleManager,
-    private val wifi: WifiManager,
-    private val sensors: SensorManager
+    private val bleProvider: () -> BleManager,
+    private val wifiProvider: () -> WifiManager,
+    private val sensorsProvider: () -> SensorManager
 ) {
 
 
@@ -43,7 +43,7 @@ class FeatureLifecycleController(
         val newFeatures = newRoute.features
 
         Log.d(
-            "FeatureLifecycleController",
+            "TW/FeatureLifecycleController",
             "Route change: ${oldRoute?.path ?: "null"} → ${newRoute.path}"
         )
 
@@ -52,17 +52,17 @@ class FeatureLifecycleController(
         // ------------------------------------------------------------
         (oldFeatures - newFeatures).forEach { feature ->
             Log.d(
-                "FeatureLifecycleController",
+                "TW/FeatureLifecycleController",
                 "Disabling feature: $feature"
             )
 
             when (feature) {
 
-                BLE -> ble.stop()
+                BLE -> bleProvider().stop()
 
-                WIFI -> wifi.stopAll()
+                WIFI -> wifiProvider().stopAll()
 
-                SENSORS -> sensors.stop()
+                SENSORS -> sensorsProvider().stop()
 
                 HEART_RATE -> {
                     // TODO: stop HR sensor listener
@@ -103,19 +103,19 @@ class FeatureLifecycleController(
         // ------------------------------------------------------------
         (newFeatures - oldFeatures).forEach { feature ->
             Log.d(
-                "FeatureLifecycleController",
+                "TW/FeatureLifecycleController",
                 "Enabling feature: $feature"
             )
 
             when (feature) {
 
-                BLE -> ble.start()
+                BLE -> bleProvider().start()
 
                 WIFI -> {
                     // wifi.startTcpServer() or similar
                 }
 
-                SENSORS -> sensors.start()
+                SENSORS -> sensorsProvider().start()
 
                 HEART_RATE -> {
                     // TODO: start HR sensor listener
@@ -152,7 +152,7 @@ class FeatureLifecycleController(
         }
 
         Log.d(
-            "FeatureLifecycleController",
+            "TW/FeatureLifecycleController",
             "Active features now: $newFeatures"
         )
     }

@@ -84,7 +84,7 @@ class PongViewModel : ViewModel() {
      * @param deltaY Drag distance in pixels.
      */
     fun onPlayerDrag(deltaY: Float) {
-        Log.d("PONG", "Drag: $deltaY")
+        Log.d("TW/Pong", "Drag: $deltaY")
 
         val current = _state.value
         val paddle = current.playerPaddle

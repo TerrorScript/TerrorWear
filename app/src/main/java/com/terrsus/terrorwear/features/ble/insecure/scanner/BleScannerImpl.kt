@@ -36,7 +36,7 @@ class BleScannerImpl(context: Context) : BleScanner {
 
     private val callback = object : ScanCallback() {
         override fun onScanResult(type: Int, result: ScanResult) {
-            Log.d("BLE", "Callback hit: ${result.device.address}")
+            Log.d("TW/BLE", "Callback hit: ${result.device.address}")
 
             // MUST be instant — no locks, no allocations, no suspend
             incoming.tryEmit(result)
@@ -74,7 +74,7 @@ class BleScannerImpl(context: Context) : BleScanner {
 
         _isScanning.value = true
         scanner?.startScan(callback)
-        Log.d("BLE", "Hardware scan started")
+        Log.d("TW/BLE", "Hardware scan started")
     }
 
     @SuppressLint("MissingPermission")
@@ -83,6 +83,6 @@ class BleScannerImpl(context: Context) : BleScanner {
 
         _isScanning.value = false
         scanner?.stopScan(callback)
-        Log.d("BLE", "Hardware scan stopped")
+        Log.d("TW/BLE", "Hardware scan stopped")
     }
 }

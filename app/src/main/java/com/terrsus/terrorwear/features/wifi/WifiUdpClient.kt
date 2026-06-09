@@ -1,5 +1,6 @@
 package com.terrsus.terrorwear.features.wifi
 
+import android.util.Log
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -41,6 +42,8 @@ class WifiUdpClient(
      * and forwards them into [packets].
      */
     fun start() {
+        Log.d("TW/WifiUdpClient", "starting")
+
         Thread {
             val buffer = ByteArray(2048)
 
@@ -52,12 +55,18 @@ class WifiUdpClient(
                 incoming.trySend(receivedBytes)
             }
         }.start()
+
+        Log.d("TW/WifiUdpClient", "started")
     }
 
     /**
      * Stops the UDP listener and closes the underlying socket.
      */
     fun stop() {
+        Log.d("TW/WifiUdpClient", "stopping")
+
         socket.close()
+
+        Log.d("TW/WifiUdpClient", "stopped")
     }
 }

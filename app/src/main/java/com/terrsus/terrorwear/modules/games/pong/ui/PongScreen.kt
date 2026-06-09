@@ -72,7 +72,7 @@ fun PongScreen(
     LaunchedEffect(Unit) {
         viewModel.event.collect { collision ->
             if (collision != Collision.None)
-                Log.d("Pong", "Bounce $collision")
+                Log.d("TW/Pong", "Bounce $collision")
 
             when (collision) {
                 Collision.Wall -> haptics.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)

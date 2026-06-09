@@ -1,9 +1,11 @@
 package com.terrsus.terrorwear.features.ble.insecure.transport
 
+import android.Manifest
 import android.bluetooth.*
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresPermission
 import com.terrsus.terrorwear.features.ble.common.model.BleGattConnectionState
 import com.terrsus.terrorwear.features.ble.common.model.BleGattService
 import com.terrsus.terrorwear.features.ble.common.model.BleGattCharacteristic
@@ -32,6 +34,7 @@ class BleGattClientImpl(
     private val notificationsFlows =
         mutableMapOf<String, MutableStateFlow<BleGattCharacteristicValue>>()
 
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     override fun connect(address: String) {
         val device = bluetoothAdapter.getRemoteDevice(address)
 
@@ -43,18 +46,19 @@ class BleGattClientImpl(
 
         device.connectGatt(context, false, object : BluetoothGattCallback() {
 
+            @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
             override fun onConnectionStateChange(
                 gatt: BluetoothGatt,
                 status: Int,
                 newState: Int
             ) {
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
-                    Log.d("Gatt", "Connected to $address")
+                    Log.d("TW/Gatt", "Connected to $address")
                     gattMap[address] = gatt
                     stateFlow.value = BleGattConnectionState.Connected
                     gatt.discoverServices()
                 } else {
-                    Log.d("Gatt", "Disconnected from $address")
+                    Log.d("TW/Gatt", "Disconnected from $address")
                     stateFlow.value = BleGattConnectionState.Disconnected
                     gattMap.remove(address)
                 }
@@ -124,6 +128,7 @@ class BleGattClientImpl(
         })
     }
 
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     override fun disconnect(address: String) {
         gattMap[address]?.close()
         gattMap.remove(address)
@@ -151,6 +156,7 @@ class BleGattClientImpl(
             )
         }
 
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     override fun read(address: String, service: UUID, characteristic: UUID): Flow<BleGattCharacteristicValue> {
         val gatt = gattMap[address] ?: return notifications(address)
 
@@ -166,6 +172,7 @@ class BleGattClientImpl(
         return notifications(address)
     }
 
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     override fun write(address: String, service: UUID, characteristic: UUID, data: ByteArray) {
         val gatt = gattMap[address] ?: return
         val ch = gatt.getService(service)?.getCharacteristic(characteristic) ?: return
@@ -178,6 +185,7 @@ class BleGattClientImpl(
         }
     }
 
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     override fun enableNotifications(address: String, service: UUID, characteristic: UUID) {
         val gatt = gattMap[address] ?: return
 

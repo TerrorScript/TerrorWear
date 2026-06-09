@@ -151,7 +151,7 @@ sealed class Route(
 
     data object WifiInfo : Route(
         path = "WifiInfo",
-        name = "WiFi",
+        name = "WiFi utilities",
         summary = "UDP/TCP, ping tools",
         icon = R.drawable.baseline_wifi_24,
         type = ModuleType.DEBUG,
