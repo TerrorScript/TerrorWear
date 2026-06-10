@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import com.terrsus.terrorwear.features.ble.domain.model.BleDevice
 import com.terrsus.terrorwear.features.ble.insecure.scanner.BleScannerClient
+import com.terrsus.terrorwear.ui.navigation.Permission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -24,6 +25,9 @@ class BleManager(
     init {
         Log.d(LogTag, "init")
     }
+
+    val requiredPermissions: Set<Permission> =
+        setOf(Permission.BluetoothScan, Permission.BluetoothConnect, Permission.BluetoothAdvertise)
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
@@ -47,5 +51,9 @@ class BleManager(
     fun stop() {
         client.stopScan()
         scope.coroutineContext.cancelChildren()
+    }
+
+    fun getMissingPermissions() {
+
     }
 }

@@ -48,7 +48,7 @@ import com.terrsus.terrorwear.ui.navigation.Route
 @Composable
 fun DashboardScreen(
     routes: List<Route>,
-    onNavigate: (route: String) -> Unit,
+    onNavigate: (route: Route) -> Unit,
     viewModel: DashboardViewModel = viewModel()
 ) {
     val listState = rememberScalingLazyListState()
@@ -109,7 +109,7 @@ fun DashboardScreen(
                     },
                     onClick = {
                         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                        onNavigate(route.path)
+                        onNavigate(route)
                     }
                 )
             }

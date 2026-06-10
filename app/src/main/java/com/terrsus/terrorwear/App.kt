@@ -1,5 +1,6 @@
 package com.terrsus.terrorwear
 
+import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,12 +17,16 @@ import com.terrsus.terrorwear.ui.navigation.NavGraph
 
 @Composable
 fun TerrorWearApp(
+    context: Context,
     modifier: Modifier = Modifier
 ) {
     TerrorWearTheme {
         MaterialTheme {
             val navController = rememberNavController()
-            NavGraph(navController)
+            NavGraph(
+                context = context,
+                navController = navController
+            )
         }
     }
 }

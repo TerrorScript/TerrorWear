@@ -12,6 +12,7 @@ import com.terrsus.terrorwear.features.wifi.tcpserver.WifiTcpServerImpl
 import com.terrsus.terrorwear.features.wifi.udpclient.WifiUdpClient
 import com.terrsus.terrorwear.features.wifi.udpclient.WifiUdpClientFake
 import com.terrsus.terrorwear.features.wifi.udpclient.WifiUdpClientImpl
+import com.terrsus.terrorwear.ui.navigation.Permission
 import com.terrsus.terrorwear.util.DeviceUtils
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +32,8 @@ class WifiManager {
     init {
         Log.i("TW/WifiManager", "init")
     }
+
+    val requiredPermissions: Set<Permission> = setOf(Permission.WifiState, Permission.WifiChange, Permission.FineLocation)
 
     private val _state = MutableStateFlow<WifiConnectionState>(WifiConnectionState.Idle)
     val state: StateFlow<WifiConnectionState> = _state

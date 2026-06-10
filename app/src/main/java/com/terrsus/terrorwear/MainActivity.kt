@@ -1,5 +1,6 @@
 package com.terrsus.terrorwear
 
+import android.R
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
@@ -44,7 +45,7 @@ class MainActivity : ComponentActivity() {
         AppContainer.init(this)
 
         // Use a simple system theme for Wear OS
-        setTheme(android.R.style.Theme_DeviceDefault)
+        setTheme(R.style.Theme_DeviceDefault)
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
@@ -54,7 +55,9 @@ class MainActivity : ComponentActivity() {
             CompositionLocalProvider(
                 LocalAppContainer provides AppContainer
             ) {
-                TerrorWearApp()
+                TerrorWearApp(
+                    this
+                )
             }
         }
     }

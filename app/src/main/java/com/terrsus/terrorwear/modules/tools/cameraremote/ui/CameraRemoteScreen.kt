@@ -19,7 +19,6 @@ import com.terrsus.terrorwear.R
 
 @Composable
 fun CameraRemoteScreen(
-    navController: NavHostController,
     viewModel: CameraRemoteViewModel
 ) {
     val haptics = LocalHapticFeedback.current

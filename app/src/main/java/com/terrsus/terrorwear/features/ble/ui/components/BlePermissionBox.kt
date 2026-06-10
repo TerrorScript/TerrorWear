@@ -11,20 +11,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 
 @Composable
-fun BlePermissionBox(
+fun PermissionBox(
+    permissions: List<String>,
+    rationale: @Composable () -> Unit = { Text("Grant permissions") },
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
-
-    val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        arrayOf(
-            Manifest.permission.BLUETOOTH_SCAN,
-            Manifest.permission.BLUETOOTH_CONNECT
-        )
-    } else {
-        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
-    }
-
     var granted by remember { mutableStateOf(false) }
 
     val launcher = rememberLauncherForActivityResult(
@@ -34,14 +26,14 @@ fun BlePermissionBox(
     }
 
     LaunchedEffect(Unit) {
-        val alreadyGranted = permissions.all {
-            ActivityCompat.checkSelfPermission(context, it) ==
+        val alreadyGranted = permissions.all { perm ->
+            ActivityCompat.checkSelfPermission(context, perm) ==
                     PackageManager.PERMISSION_GRANTED
         }
         if (alreadyGranted) granted = true
-        else launcher.launch(permissions)
+        else launcher.launch(permissions.toTypedArray())
     }
 
     if (granted) content()
-    else Text("Grant Bluetooth permissions")
+    else rationale()
 }

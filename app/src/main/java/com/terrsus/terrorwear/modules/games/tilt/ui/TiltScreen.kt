@@ -26,7 +26,7 @@ import kotlinx.coroutines.isActive
  */
 @Composable
 fun TiltScreen(
-    navController: NavHostController,
+    navigateBack: () -> Unit,
     viewModel: TiltViewModel
 ) {
     // SensorManager needs context so it lives here
@@ -83,7 +83,7 @@ fun TiltScreen(
     // Back button logic
     BackHandler {
         val consumed = viewModel.onBackPressed()
-        if (!consumed) navController.popBackStack()
+        if (!consumed) navigateBack()
     }
 
 

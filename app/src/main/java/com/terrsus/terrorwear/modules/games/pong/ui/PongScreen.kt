@@ -47,7 +47,7 @@ import com.terrsus.terrorwear.modules.games.pong.viewmodel.PongViewModel
  */
 @Composable
 fun PongScreen(
-    navController: NavHostController,
+    navigateBack: () -> Unit,
     viewModel: PongViewModel
 ) {
     val state by viewModel.state.collectAsState()
@@ -71,9 +71,6 @@ fun PongScreen(
     // Trigger haptics whenever relevant events are emitted
     LaunchedEffect(Unit) {
         viewModel.event.collect { collision ->
-            if (collision != Collision.None)
-                Log.d("TW/Pong", "Bounce $collision")
-
             when (collision) {
                 Collision.Wall -> haptics.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
                 Collision.Paddle -> haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
@@ -97,7 +94,7 @@ fun PongScreen(
     // Back button
     BackHandler {
         val handled = viewModel.onBackPressed()
-        if (!handled) navController.popBackStack()
+        if (!handled) navigateBack()
     }
 
     // Wear OS vignette

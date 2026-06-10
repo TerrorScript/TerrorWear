@@ -17,7 +17,8 @@ import com.terrsus.terrorwear.ui.navigation.Route
 
 @Composable
 fun WifiToolsScreen(
-    navController: NavHostController,
+    attemptNavigate: (route: Route, args: Map<String, String>) -> Unit,
+    navigateBack: () -> Unit,
     viewModel: WifiConnectionViewModel
 ) {
     val scroll = rememberScalingLazyListState()
@@ -180,7 +181,7 @@ fun WifiToolsScreen(
                             contentDescription = "Packet Log"
                         )
                     },
-                    onClick = { navController.navigate(Route.WifiLogs.path) }
+                    onClick = { attemptNavigate(Route.WifiLogs, emptyMap()) }
                 )
             }
 
@@ -193,7 +194,7 @@ fun WifiToolsScreen(
                             contentDescription = "Back"
                         )
                     },
-                    onClick = { navController.popBackStack() }
+                    onClick = { navigateBack() }
                 )
             }
         }

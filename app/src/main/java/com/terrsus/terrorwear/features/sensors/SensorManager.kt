@@ -5,6 +5,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.util.Log
+import com.terrsus.terrorwear.ui.navigation.Permission
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
  * hardware APIs and exposes raw sensor data as flows.
  */
 class SensorManager(context: Context) : SensorEventListener {
+    val requiredPermissions: Set<Permission> = setOf()
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val android = context.getSystemService(Context.SENSOR_SERVICE) as AndroidSensorManager

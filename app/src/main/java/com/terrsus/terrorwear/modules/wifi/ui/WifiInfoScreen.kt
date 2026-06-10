@@ -30,7 +30,7 @@ import com.terrsus.terrorwear.ui.navigation.Route
  */
 @Composable
 fun WifiInfoScreen(
-    navController: NavHostController,
+    attemptNavigate: (route: Route, args: Map<String, String>) -> Unit,
     viewModel: WifiNetworkInfoViewModel,
     connectionViewModel: WifiConnectionViewModel
 ) {
@@ -125,7 +125,7 @@ fun WifiInfoScreen(
                 NavigationChip(
                     label = "Tools",
                     iconRes = WifiIcons.Tools,
-                    onClick = { navController.navigate(Route.WifiTools.path) }
+                    onClick = { attemptNavigate(Route.WifiTools, emptyMap()) }
                 )
             }
 
@@ -133,7 +133,7 @@ fun WifiInfoScreen(
                 NavigationChip(
                     label = "Packet Log",
                     iconRes = WifiIcons.List,
-                    onClick = { navController.navigate(Route.WifiLogs.path) }
+                    onClick = { attemptNavigate(Route.WifiLogs, emptyMap()) }
                 )
             }
         }

@@ -41,6 +41,21 @@ sealed class Route(
     )
 
     // ------------------------------
+    // Failure
+    // ------------------------------
+
+    object PermissionDenied : Route(
+        path = "permissionDenied/{features}",
+        name = "Permissions denied",
+        summary = null,
+        icon = 0,
+        type = ModuleType.NONE
+    ) {
+        fun path(features: String) = "permissionDenied/$features"
+    }
+
+
+    // ------------------------------
     // System
     // ------------------------------
 
@@ -146,7 +161,7 @@ sealed class Route(
         type = ModuleType.DEBUG,
         features = setOf(Feature.BLE)
     ) {
-        fun create(address: String) = "gatt/$address"
+        fun path(address: String) = "gatt/$address"
     }
 
     data object WifiInfo : Route(

@@ -1,7 +1,17 @@
 package com.terrsus.terrorwear.domain.features
 
 import android.util.Log
-import com.terrsus.terrorwear.domain.features.Feature.*
+import com.terrsus.terrorwear.domain.features.Feature.BAROMETER
+import com.terrsus.terrorwear.domain.features.Feature.BLE
+import com.terrsus.terrorwear.domain.features.Feature.FOREGROUND_SERVICE
+import com.terrsus.terrorwear.domain.features.Feature.HAPTICS
+import com.terrsus.terrorwear.domain.features.Feature.HEART_RATE
+import com.terrsus.terrorwear.domain.features.Feature.LOCATION
+import com.terrsus.terrorwear.domain.features.Feature.MAGNETOMETER
+import com.terrsus.terrorwear.domain.features.Feature.MICROPHONE
+import com.terrsus.terrorwear.domain.features.Feature.SENSORS
+import com.terrsus.terrorwear.domain.features.Feature.TEMPERATURE
+import com.terrsus.terrorwear.domain.features.Feature.WIFI
 import com.terrsus.terrorwear.features.ble.insecure.BleManager
 import com.terrsus.terrorwear.features.sensors.SensorManager
 import com.terrsus.terrorwear.features.wifi.manager.WifiManager
@@ -111,7 +121,9 @@ class FeatureLifecycleController(
 
             when (feature) {
 
-                BLE -> bleProvider().start()
+                BLE -> {
+                    bleProvider().start()
+                }
 
                 WIFI -> {
                     // wifi.startTcpServer() or similar

@@ -1,6 +1,5 @@
 package com.terrsus.terrorwear.modules.games.pong.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.terrsus.terrorwear.features.games.pong.domain.logic.PongAi
@@ -15,6 +14,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+
+private const val LogTag = "TW/Pong"
 
 /**
  * Controls Pong game state, physics, AI, and player input.
@@ -84,8 +85,6 @@ class PongViewModel : ViewModel() {
      * @param deltaY Drag distance in pixels.
      */
     fun onPlayerDrag(deltaY: Float) {
-        Log.d("TW/Pong", "Drag: $deltaY")
-
         val current = _state.value
         val paddle = current.playerPaddle
 

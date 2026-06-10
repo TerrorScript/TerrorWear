@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.terrsus.terrorwear.ui.components.BottomStatusPopup
+import com.terrsus.terrorwear.ui.navigation.Route
 import com.terrsus.terrorwear.viewmodel.ble.BleViewModel
 import kotlinx.coroutines.delay
 
@@ -28,7 +29,7 @@ private const val LogTag = "TW/BLE"
 
 @Composable
 fun BleScreen(
-    navController: NavHostController,
+    attemptNavigate: (route: Route, args: Map<String, String>) -> Unit,
     viewModel: BleViewModel
 ) {
     val haptics = LocalHapticFeedback.current
@@ -46,7 +47,7 @@ fun BleScreen(
 
     LaunchedEffect(navTarget) {
         navTarget?.let { device ->
-            navController.navigate("gatt/${device.address}")
+            attemptNavigate(Route.Gatt, mapOf("address" to device.address))
             viewModel.clearGattNavigation() // reset
         }
     }
