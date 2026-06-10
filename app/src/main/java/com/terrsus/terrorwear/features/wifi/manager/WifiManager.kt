@@ -42,21 +42,64 @@ class WifiManager {
     private var tcpClient: WifiTcpClient? = null
     private var tcpServer: WifiTcpServer? = null
 
+    /**
+     * Starts a UDP listener bound to the given [port].
+     *
+     * This replaces any existing UDP client instance. The connection state is set to
+     * [WifiConnectionState.Listening] immediately, and subsequent transport‑level events
+     * emitted by the UDP client are forwarded into [events] and reflected in [state].
+     *
+     * Event handling:
+     * - [WifiEvent.Error]: state becomes [WifiConnectionState.Error]
+     * - [WifiEvent.Closed]: state becomes [WifiConnectionState.Closed]
+     * - Other events: forwarded but do not affect state
+     *
+     * @return the newly created [WifiUdpClient] instance
+     */
     fun startUdp(port: Int): WifiUdpClient {
         stopUdp()
 
+        _state.value = WifiConnectionState.Listening(port)
+
+        fun handleEvent(event: WifiEvent) {
+            when (event) {
+                is WifiEvent.Error ->
+                    _state.value = WifiConnectionState.Error(event.message, event.cause)
+
+                is WifiEvent.Closed ->
+                    _state.value = WifiConnectionState.Closed
+
+                else -> Unit
+            }
+
+            _events.tryEmit(event)
+        }
+
         val newUdpClient =
-            if (DeviceUtils.isEmulator) WifiUdpClientFake(port)
-            else WifiUdpClientImpl(port)
+            if (DeviceUtils.isEmulator) WifiUdpClientFake(port, ::handleEvent)
+            else WifiUdpClientImpl(port, ::handleEvent)
 
         newUdpClient.start()
         udpClient = newUdpClient
-
-        _events.tryEmit(WifiEvent.Connected("udp-listener", port))
-
         return newUdpClient
     }
 
+    /**
+     * Starts a TCP client connection to the given remote [host] and [port].
+     *
+     * Any existing TCP client is stopped before creating a new one. The connection state
+     * is set to [WifiConnectionState.Connecting] immediately. The underlying TCP client
+     * emits transport‑level [WifiEvent]s, which are forwarded into [events] and used to
+     * update [state].
+     *
+     * Event handling:
+     * - [WifiEvent.Connected]: state becomes [WifiConnectionState.Connected]
+     * - [WifiEvent.Error]: state becomes [WifiConnectionState.Error]
+     * - [WifiEvent.Closed]: state becomes [WifiConnectionState.Closed]
+     * - Other events: forwarded but do not affect state
+     *
+     * @return the newly created and connecting [WifiTcpClient] instance
+     */
     fun startTcpClient(host: String, port: Int): WifiTcpClient {
         stopTcpClient()
 
@@ -88,33 +131,87 @@ class WifiManager {
         return newTcpClient
     }
 
+    /**
+     * Starts a TCP server listening on the given [port].
+     *
+     * Any existing TCP server is stopped before creating a new one. The connection state
+     * is set to [WifiConnectionState.Listening] immediately. The server emits transport‑level
+     * [WifiEvent]s, which are forwarded into [events] and used to update [state].
+     *
+     * Event handling:
+     * - [WifiEvent.Connected]: a remote client connected; state becomes
+     *   [WifiConnectionState.ClientConnected]
+     * - [WifiEvent.Error]: state becomes [WifiConnectionState.Error]
+     * - [WifiEvent.Closed]: state becomes [WifiConnectionState.Closed]
+     * - Other events: forwarded but do not affect state
+     *
+     * @return the newly created and listening [WifiTcpServer] instance
+     */
     fun startTcpServer(port: Int): WifiTcpServer {
         stopTcpServer()
 
+        _state.value = WifiConnectionState.Listening(port)
+
+        fun handleEvent(event: WifiEvent) {
+            when (event) {
+                is WifiEvent.Connected ->
+                    _state.value = WifiConnectionState.ClientConnected(event.host, event.port)
+
+                is WifiEvent.Error ->
+                    _state.value = WifiConnectionState.Error(event.message, event.cause)
+
+                is WifiEvent.Closed ->
+                    _state.value = WifiConnectionState.Closed
+
+                else -> Unit
+            }
+
+            _events.tryEmit(event)
+        }
+
         val newTcpServer =
-            if (DeviceUtils.isEmulator) WifiTcpServerFake(port)
-            else WifiTcpServerImpl(port)
+            if (DeviceUtils.isEmulator) WifiTcpServerFake(port, ::handleEvent)
+            else WifiTcpServerImpl(port, ::handleEvent)
 
         newTcpServer.start()
         tcpServer = newTcpServer
         return newTcpServer
     }
 
+    /**
+     * Stops the active UDP client, if any, and clears the reference.
+     * Does not modify [state]; the transport layer is responsible for emitting
+     * [WifiEvent.Closed] if appropriate.
+     */
     fun stopUdp() {
         udpClient?.stop()
         udpClient = null
     }
 
+    /**
+     * Disconnects the active TCP client, if any, and clears the reference.
+     * Does not modify [state]; the transport layer is responsible for emitting
+     * [WifiEvent.Closed] if appropriate.
+     */
     fun stopTcpClient() {
         tcpClient?.disconnect()
         tcpClient = null
     }
 
+    /**
+     * Stops the active TCP server, if any, and clears the reference.
+     * Does not modify [state]; the transport layer is responsible for emitting
+     * [WifiEvent.Closed] if appropriate.
+     */
     fun stopTcpServer() {
         tcpServer?.stop()
         tcpServer = null
     }
 
+    /**
+     * Stops all active Wi‑Fi transport components (UDP, TCP client, TCP server).
+     * This is equivalent to calling [stopUdp], [stopTcpClient], and [stopTcpServer].
+     */
     fun stopAll() {
         stopUdp()
         stopTcpClient()

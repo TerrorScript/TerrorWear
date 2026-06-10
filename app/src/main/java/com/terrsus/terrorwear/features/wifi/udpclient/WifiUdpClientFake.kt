@@ -1,6 +1,8 @@
 package com.terrsus.terrorwear.features.wifi.udpclient
 
 import android.util.Log
+import com.terrsus.terrorwear.domain.wifi.model.WifiPacket
+import com.terrsus.terrorwear.features.wifi.domain.model.WifiEvent
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -14,7 +16,8 @@ private const val LogTag = "TW/Wifi/UdpClient"
  * socket creation on platforms where UDP is not permitted.
  */
 class WifiUdpClientFake(
-    private val listenPort: Int
+    private val listenPort: Int,
+    private val handleWifiEvent: (WifiEvent) -> Unit
 ) : WifiUdpClient {
 
     private val incoming = Channel<ByteArray>(Channel.Factory.BUFFERED)
@@ -27,7 +30,7 @@ class WifiUdpClientFake(
     override fun start() {
         Log.d(LogTag, "starting")
 
-        // No operation
+        handleWifiEvent(WifiEvent.Listening(listenPort))
 
         Log.d(LogTag, "starting")
     }
@@ -35,7 +38,7 @@ class WifiUdpClientFake(
     override fun stop() {
         Log.d(LogTag, "stopping")
 
-        // No operation
+        handleWifiEvent(WifiEvent.Closed("fake udp stopped"))
 
         Log.d(LogTag, "stopped")
     }
@@ -48,6 +51,13 @@ class WifiUdpClientFake(
         Log.d(LogTag, "sending $host:$port")
 
         incoming.trySend(data)
+        handleWifiEvent(WifiEvent.Packet(
+            packet = WifiPacket(
+                data = data,
+                from = host,
+                port = port
+            )
+        ))
 
         Log.d(LogTag, "sent $host:$port")
     }

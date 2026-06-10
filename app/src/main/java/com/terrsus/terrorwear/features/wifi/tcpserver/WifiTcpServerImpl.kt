@@ -1,6 +1,8 @@
 package com.terrsus.terrorwear.features.wifi.tcpserver
 
 import android.util.Log
+import com.terrsus.terrorwear.domain.wifi.model.WifiPacket
+import com.terrsus.terrorwear.features.wifi.domain.model.WifiEvent
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -16,8 +18,9 @@ private const val LogTag = "TW/Wifi/TcpServer"
  * exposes incoming data as a [kotlinx.coroutines.flow.Flow] of raw [ByteArray] packets.
  */
 class WifiTcpServerImpl(
-    private val port: Int
-): WifiTcpServer {
+    private val port: Int,
+    private val handleWifiEvent: (WifiEvent) -> Unit
+) : WifiTcpServer {
     private val serverSocket = ServerSocket(port)
     private var clientSocket: Socket? = null
 
@@ -40,6 +43,13 @@ class WifiTcpServerImpl(
 
             try {
                 clientSocket = serverSocket.accept()
+                val client = clientSocket!!
+                handleWifiEvent(
+                    WifiEvent.Connected(
+                        host = client.inetAddress.hostAddress!!,
+                        port = clientSocket!!.port
+                    )
+                )
                 Log.d(LogTag, "starting client connected")
             } catch (e: Exception) {
                 Log.d(LogTag, "starting accept error e=$e")
@@ -54,11 +64,31 @@ class WifiTcpServerImpl(
                     if (bytesRead > 0) {
                         val packetBytes = buffer.copyOf(bytesRead)
                         incoming.trySend(packetBytes)
+
+                        val client = clientSocket!!
+                        val host = client.inetAddress.hostAddress
+                        val remotePort = client.port
+                        handleWifiEvent(
+                            WifiEvent.Packet(
+                                packet = WifiPacket(
+                                    data = packetBytes,
+                                    from = host,
+                                    port = remotePort
+                                )
+                            )
+                        )
+
                     } else if (bytesRead < 0) {
+                        handleWifiEvent(WifiEvent.Closed(reason = "client disconnected"))
                         break // client disconnected
                     }
                 }
             } catch (e: Exception) {
+                handleWifiEvent(WifiEvent.Error(
+                    message = "read error",
+                    cause = e
+                ))
+
                 Log.d(LogTag, "read error e=$e")
             }
         }.start()
@@ -86,8 +116,12 @@ class WifiTcpServerImpl(
             clientSocket?.close()
             serverSocket.close()
 
+            handleWifiEvent(WifiEvent.Closed("server stopped"))
+
             Log.d(LogTag, "stopped")
         } catch (e: Exception) {
+            handleWifiEvent(WifiEvent.Error("stop error", e))
+
             Log.d(LogTag, "stop error e=$e")
         }
     }

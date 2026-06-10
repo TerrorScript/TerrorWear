@@ -1,6 +1,8 @@
 package com.terrsus.terrorwear.features.wifi.udpclient
 
 import android.util.Log
+import com.terrsus.terrorwear.domain.wifi.model.WifiPacket
+import com.terrsus.terrorwear.features.wifi.domain.model.WifiEvent
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -13,12 +15,13 @@ private const val LogTag = "TW/Wifi/UdpClient"
 /**
  * Simple UDP listener/sender for Wi‑Fi traffic.
  *
- * Listens on a fixed local port and exposes incoming datagrams as a cold [kotlinx.coroutines.flow.Flow]
+ * Listens on a fixed local port and exposes incoming datagrams as a cold [Flow]
  * of raw [ByteArray] packets. Sending is connectionless and requires host/port
  * per call.
  */
 class WifiUdpClientImpl(
-    private val listenPort: Int
+    private val listenPort: Int,
+    private val handleWifiEvent: (WifiEvent) -> Unit
 ): WifiUdpClient {
     private val socket = DatagramSocket(listenPort)
     private val incoming = Channel<ByteArray>(Channel.Factory.BUFFERED)
@@ -64,9 +67,21 @@ class WifiUdpClientImpl(
 
                     val receivedBytes = packet.data.copyOf(packet.length)
                     incoming.trySend(receivedBytes)
+                    handleWifiEvent(WifiEvent.Packet(
+                        packet = WifiPacket(
+                            data = receivedBytes,
+                            from = packet.address.hostAddress,
+                            port = packet.port
+                        )
+                    ))
                 }
             }
             catch (e: Exception) {
+                handleWifiEvent(WifiEvent.Error(
+                    message = "udp receive error",
+                    cause = e
+                ))
+
                 Log.d(LogTag, "receive error e=$e")
             }
         }.start()
@@ -82,10 +97,16 @@ class WifiUdpClientImpl(
 
         try {
             socket.close()
+            handleWifiEvent(WifiEvent.Closed(reason = "udp stopped"))
+
+            Log.d(LogTag, "stopped")
         } catch (e: Exception) {
+            handleWifiEvent(WifiEvent.Error(
+                message = "udp stop error",
+                cause = e
+            ))
+
             Log.d(LogTag, "stopping error e=$e")
         }
-
-        Log.d(LogTag, "stopped")
     }
 }

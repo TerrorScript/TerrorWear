@@ -1,5 +1,7 @@
 package com.terrsus.terrorwear.features.wifi.tcpserver
 
+import com.terrsus.terrorwear.domain.wifi.model.WifiPacket
+import com.terrsus.terrorwear.features.wifi.domain.model.WifiEvent
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -11,7 +13,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
  * socket creation on platforms where TCP servers are not permitted.
  */
 class WifiTcpServerFake(
-    private val port: Int
+    private val port: Int,
+    private val handleWifiEvent: (WifiEvent) -> Unit
 ) : WifiTcpServer {
 
     private val incoming = Channel<ByteArray>(Channel.Factory.BUFFERED)
@@ -22,11 +25,11 @@ class WifiTcpServerFake(
         get() = port
 
     override fun start() {
-        // No operation
+        handleWifiEvent(WifiEvent.Listening(port))
     }
 
     override fun stop() {
-        // No operation
+        handleWifiEvent(WifiEvent.Closed("fake server stopped"))
     }
 
     /**
@@ -35,5 +38,6 @@ class WifiTcpServerFake(
      */
     override fun send(data: ByteArray) {
         incoming.trySend(data)
+        handleWifiEvent(WifiEvent.Packet(WifiPacket(data, "local", port)))
     }
 }
